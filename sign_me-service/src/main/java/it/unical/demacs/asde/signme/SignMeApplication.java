@@ -25,7 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 @SpringBootApplication
-public class ProvaApplication {
+public class SignMeApplication {
 
 	// key1 8ac7a514e86048a087f9fca5180a0981
 	// key2 833a3a83f8f140aa8c7ffba6ae59e143
@@ -84,7 +84,7 @@ public class ProvaApplication {
 			}
 		}
 
-		SpringApplication.run(ProvaApplication.class, args);
+		SpringApplication.run(SignMeApplication.class, args);
 	}
 
 	private static String detect(String image) {
