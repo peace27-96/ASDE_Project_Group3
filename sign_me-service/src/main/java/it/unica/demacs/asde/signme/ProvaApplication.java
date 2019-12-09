@@ -45,19 +45,18 @@ public class ProvaApplication {
 	private static final String imageWithFaces4 = "res/domenico.jpeg";
 	private static final String imageWithFaces5 = "res/walter.jpeg";
 	private static final String imageWithFaces6 = "res/classe.jpeg";
-	private static final String imageWithFaces7 = "res/classe1.jpeg";
+	// private static final String imageWithFaces7 = "res/classe1.jpeg";
 
 	// private static final String faceAttributes =
 	// "age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories,blur,exposure,noise";
 
 	public static void main(String[] args) {
 
-		String studentsPicture = detect(imageWithFaces7);
+		String studentsPicture = detect(imageWithFaces6);
 		ArrayList<String> studentsFaces = new ArrayList<>();
 		ArrayList<String> pictureFaceIDs = getPictureIDs(studentsPicture);
 
 		HashMap<String, String> students = new HashMap<>();
-		
 
 		studentsFaces.add(imageWithFaces1);
 		studentsFaces.add(imageWithFaces2);
@@ -116,7 +115,7 @@ public class ProvaApplication {
 			HttpResponse response = httpclient.execute(request);
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
-				
+
 				// Format and display the JSON response.
 				// System.out.println("REST Response:\n");
 
@@ -183,7 +182,7 @@ public class ProvaApplication {
 
 			if (entity != null) {
 				String result = EntityUtils.toString(entity);
-				// System.out.println(result);
+				System.out.println(result);
 				JSONObject obj = new JSONObject(result);
 				if (obj.getBoolean("isIdentical")) {
 					found = true;
