@@ -1,0 +1,13 @@
+1) Student subscription
+	- Access the course material
+
+2) Course management
+	- Course creation, selection of starting and ending date, days of the week, and hours of the day
+	- Lectures editing
+	- Material upload
+	- Students picture upload for getting attendances
+
+3) Login
+	- Picture upload
+
+4) Persistence
