@@ -26,7 +26,7 @@ public class User {
 				joinColumns = {@JoinColumn(name = "email")},
 				inverseJoinColumns = {@JoinColumn(name = "courseId")})
 	private Set<Course> followingCourses;
-
+	
 	public User(String email, String password, String first_name, String lastName) {
 		super();
 		this.email = email;
