@@ -26,7 +26,7 @@ class SignMeApplicationTests {
 
 	@Autowired
 	private CourseDAO courseDAO;
-	
+
 	@Autowired
 	private LectureDAO lectureDAO;
 
@@ -49,28 +49,27 @@ class SignMeApplicationTests {
 		User cris = new User("cris@gmail.com", "bu", "Cristian", "De Marco", new HashSet<>(), new HashSet<>(), null);
 
 		Set<Course> courses = new HashSet<>();
-		
+
 		Course agile = new Course();
 		agile.setLecturer(cris);
 		agile.setSubject("Agile");
-		
+
 		courses.add(agile);
-		
+
 		cris.setCreatedCourses(courses);
 
 		userDAO.save(cris);
-		
+
 		List<Course> crisCourses = new ArrayList<>(courseDAO.findCoursesByLecturerEmail(cris.getEmail()));
 		assertEquals(1, crisCourses.size());
-		
-		
+
 		Course secure = new Course();
 		secure.setLecturer(cris);
 		courseDAO.save(secure);
-		
+
 		crisCourses = new ArrayList<>(courseDAO.findCoursesByLecturerEmail(cris.getEmail()));
 		assertEquals(2, crisCourses.size());
-		
+
 	}
 
 	@Test
@@ -86,11 +85,9 @@ class SignMeApplicationTests {
 		Set<Course> courses = new LinkedHashSet<Course>();
 		Course agile = new Course();
 		agile.setSubject("Agile");
-		agile.setCourseId(1);
 
 		Course secure = new Course();
 		secure.setSubject("Secure");
-		secure.setCourseId(2);
 
 		courses.add(agile);
 		courses.add(secure);
@@ -111,20 +108,44 @@ class SignMeApplicationTests {
 
 		Lecture lecture1 = new Lecture();
 		Lecture lecture2 = new Lecture();
-		
+
 		lecture1.setDescription("Scrum");
 		lecture2.setDescription("Bu");
-		
+
 		lectureDAO.save(lecture1);
 		lectureDAO.save(lecture2);
-		
+
 		Iterable<Lecture> lectures = lectureDAO.findAll();
-		
+
 		for (Lecture lecture : lectures) {
 			System.out.println(lecture.getLectureId() + " " + lecture.getDescription());
 		}
 
 	}
 
+	@Test
+	void lectureCourseWorks() {
+		Course agile = new Course();
+		agile.setSubject("Agile");
+
+		courseDAO.save(agile);
+
+		Lecture lecture1 = new Lecture();
+		lecture1.setDescription("First");
+		lecture1.setCourse(agile);
+
+		Lecture lecture2 = new Lecture();
+		lecture2.setDescription("Second");
+		lecture2.setCourse(agile);
+
+		lectureDAO.save(lecture1);
+		lectureDAO.save(lecture2);
+
+		Iterable<Course> courses = courseDAO.findAll();
+
+		for (Course course : courses) {
+			assertEquals(2, course.getLectures().size());
+		}
+	}
 
 }
