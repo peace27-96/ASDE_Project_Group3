@@ -11,20 +11,18 @@ public class Invitation {
 
 	@Id
 	private Integer invitationId;
-	private String receiver;
-	private String course;
-
-	@ManyToOne
-	private User lecturer;
+	private String student;
+	private String lecturer;
+	private Integer course;
 
 	public Invitation() {
 		super();
 	}
 
-	public Invitation(Integer invitationId, String receiver, String course, User lecturer) {
+	public Invitation(Integer invitationId, String receiver, Integer course, String lecturer) {
 		super();
 		this.invitationId = invitationId;
-		this.receiver = receiver;
+		this.lecturer = receiver;
 		this.course = course;
 		this.lecturer = lecturer;
 	}
@@ -37,28 +35,28 @@ public class Invitation {
 		this.invitationId = invitationId;
 	}
 
-	public String getReceiver() {
-		return receiver;
-	}
-
-	public void setReceiver(String receiver) {
-		this.receiver = receiver;
-	}
-
-	public String getCourse() {
-		return course;
-	}
-
-	public void setCourse(String course) {
-		this.course = course;
-	}
-
-	public User getLecturer() {
+	public String getLecturer() {
 		return lecturer;
 	}
 
-	public void setLecturer(User lecturer) {
-		this.lecturer = lecturer;
+	public void setLecturer(String receiver) {
+		this.lecturer = receiver;
+	}
+
+	public Integer getCourse() {
+		return course;
+	}
+
+	public void setCourse(Integer course) {
+		this.course = course;
+	}
+
+	public String getStudent() {
+		return student;
+	}
+
+	public void setStudent(String student) {
+		this.student = student;
 	}
 
 }
