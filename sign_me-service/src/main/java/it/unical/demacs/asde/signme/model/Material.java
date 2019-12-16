@@ -1,33 +1,33 @@
-package it.unical.demacs.asde.signme.models;
+package it.unical.demacs.asde.signme.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Lecture")
-public class Lecture {
+@Table(name = "Material")
+public class Material {
 
 	@Id
-	private Integer lectureId;
+	private Integer materialId;
 	private String description;
 
-	public Lecture() {
+	public Material() {
 		super();
 	}
 
-	public Lecture(Integer lectureId, String description) {
+	public Material(Integer materialId, String description) {
 		super();
-		this.lectureId = lectureId;
+		this.materialId = materialId;
 		this.description = description;
 	}
 
-	public Integer getLectureId() {
-		return lectureId;
+	public Integer getMaterialId() {
+		return materialId;
 	}
 
-	public void setLectureId(Integer lectureId) {
-		this.lectureId = lectureId;
+	public void setMaterialId(Integer materialId) {
+		this.materialId = materialId;
 	}
 
 	public String getDescription() {

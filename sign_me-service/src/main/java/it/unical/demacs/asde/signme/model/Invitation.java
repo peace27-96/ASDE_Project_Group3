@@ -1,4 +1,4 @@
-package it.unical.demacs.asde.signme.models;
+package it.unical.demacs.asde.signme.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
