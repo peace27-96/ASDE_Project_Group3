@@ -19,31 +19,29 @@ public class SignMeController {
 
 	@Autowired
 	private LoginService loginService;
-	
+
 	@Autowired
 	private RegistrationService registrationService;
-	
+
 	@Autowired
 	private UserPictureUpdateService userPictureUpdateService;
-	
+
 	@CrossOrigin
 	@PostMapping("/login")
 	public User login(@RequestBody UserLoginDTO userLoginDTO) {
 		return loginService.login(userLoginDTO);
 	}
-	
+
 	@CrossOrigin
 	@PostMapping("/register")
 	public User register(@RequestBody UserRegistrationDTO userRegistrationDTO) {
 		return registrationService.register(userRegistrationDTO);
 	}
-	
+
 	@CrossOrigin
 	@PostMapping("/pictureUpdate")
-	public User uploadPicture (@RequestBody UserPictureUpdateDTO) {
-		
-		
-		return userPictureUpdateService.
+	public User uploadPicture (@RequestBody UserPictureUpdateDTO pictureUpdateDTO) {
+		return null;
 	}
 	
 }
