@@ -1,4 +1,4 @@
-package it.unical.demacs.asde.signme.models;
+package it.unical.demacs.asde.signme.model;
 
 import java.util.Set;
 
@@ -12,29 +12,29 @@ import javax.persistence.Table;
 public class Course {
 
 	@Id
-	private int course_id;
+	private Integer courseId;
 	private String subject;
-
-	@ManyToMany(mappedBy="courses")
-	Set<User> students;
 	
+	@ManyToMany(mappedBy = "followingCourses")
+	Set<User> students;
+
 	public Course() {
 		super();
 	}
 
-	public Course(int course_id, String subject, Set<User> students) {
+	public Course(int courseId, String subject, Set<User> students) {
 		super();
-		this.course_id = course_id;
+		this.courseId = courseId;
 		this.subject = subject;
 		this.students = students;
 	}
 
-	public int getCourse_id() {
-		return course_id;
+	public int getCourseId() {
+		return courseId;
 	}
 
-	public void setCourse_id(int course_id) {
-		this.course_id = course_id;
+	public void setCourseId(int courseId) {
+		this.courseId = courseId;
 	}
 
 	public String getSubject() {
@@ -52,5 +52,5 @@ public class Course {
 	public void setStudents(Set<User> students) {
 		this.students = students;
 	}
-
+	
 }
