@@ -1,6 +1,7 @@
 package it.unical.demacs.asde.signme.model;
 
-import java.util.List;
+
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -24,15 +25,15 @@ public class User {
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER) // lazy load
 	@JoinTable(name = "Subscriptions", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
 			@JoinColumn(name = "courseId") })
-	private List<Course> followingCourses;
+	private Set<Course> followingCourses;
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "Attendances", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
 			@JoinColumn(name = "lectureId") })
-	private List<Lecture> attendedLectures;
+	private Set<Lecture> attendedLectures;
 
-	public User(String email, String password, String first_name, String lastName, List<Course> followingCourses,
-			List<Lecture> attendedLectures) {
+	public User(String email, String password, String first_name, String lastName, Set<Course> followingCourses,
+			Set<Lecture> attendedLectures) {
 		super();
 		this.email = email;
 		this.password = password;
@@ -78,19 +79,19 @@ public class User {
 		this.lastName = lastName;
 	}
 
-	public List<Course> getFollowingCourses() {
+	public Set<Course> getFollowingCourses() {
 		return followingCourses;
 	}
 
-	public void setFollowingCourses(List<Course> followingCourses) {
+	public void setFollowingCourses(Set<Course> followingCourses) {
 		this.followingCourses = followingCourses;
 	}
 
-	public List<Lecture> getAttendedLectures() {
+	public Set<Lecture> getAttendedLectures() {
 		return attendedLectures;
 	}
 
-	public void setAttendedLectures(List<Lecture> attendedLectures) {
+	public void setAttendedLectures(Set<Lecture> attendedLectures) {
 		this.attendedLectures = attendedLectures;
 	}
 

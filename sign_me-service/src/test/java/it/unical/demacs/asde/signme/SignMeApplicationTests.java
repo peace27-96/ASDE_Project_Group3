@@ -2,9 +2,7 @@ package it.unical.demacs.asde.signme;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -26,22 +24,22 @@ class SignMeApplicationTests {
 
 	@Test
 	void userDAOWorks() {
-		userDAO.save(new User("foo@foo.com", "foo", "malvio", "foo"));
+		userDAO.save(new User("foo@foo.com", "foo", "malvio", "foo", null, null));
 		User malvio = userDAO.findById("foo@foo.com").get();
 		assertEquals(malvio.getFirstName(), "malvio");
 	}
 
 	@Test
 	void userCoursesMtMWorks() {
-		userDAO.save(new User("kiello@foo.com", "foo", "kiello", "pace"));
-		userDAO.save(new User("cris@foo.com", "foo", "cris", "dema"));
+		userDAO.save(new User("kiello@foo.com", "foo", "kiello", "pace", null, null));
+		userDAO.save(new User("cris@foo.com", "foo", "cris", "dema", null, null));
 		User kiello = userDAO.findUserByFirstName("kiello");
 		User cris = userDAO.findUserByFirstName("cris");
 
 		assertEquals(kiello.getFirstName(), "kiello");
 		assertEquals(cris.getLastName(), "dema");
 
-		Set<Course> courses = new HashSet<>();
+		Set<Course> courses = new LinkedHashSet<Course>();
 		Course agile = new Course();
 		agile.setSubject("Agile");
 		agile.setCourseId(1);
@@ -65,13 +63,12 @@ class SignMeApplicationTests {
 
 	@Test
 	void userLecturesMtMWorks() {
-		User kiello = new User("kiello@foo.com", "foo", "kiello", "pace");
-		User cris = new User("cris@foo.com", "foo", "cris", "dema");
+		User kiello = new User("kiello@foo.com", "foo", "kiello", "pace", null, null);
 
-		Lecture lecture1 = new Lecture(01, "Intro", null);
-		Lecture lecture2 = new Lecture(02, "Pattern", null);
+		Lecture lecture1 = new Lecture(01, "Intro", null, null);
+		Lecture lecture2 = new Lecture(02, "Pattern", null, null);
 
-		Set<Lecture> lectures = new HashSet<Lecture>();
+		Set<Lecture> lectures = new LinkedHashSet<Lecture>();
 		lectures.add(lecture1);
 		lectures.add(lecture2);
 
@@ -87,12 +84,16 @@ class SignMeApplicationTests {
 	@Test
 	void lecturesCoursesWorks() {
 		Course course = new Course(1, "Agile", null, null);
-		Lecture lecture1 = new Lecture(1, "Intro", course);
-		Lecture lecture2 = new Lecture(2, "Pattern", course);
+		Lecture lecture1 = new Lecture(1, "Intro", course, null);
+		Lecture lecture2 = new Lecture(2, "Pattern", course, null);
+		Lecture lecture3 = new Lecture(3, "Scrum", course, null);
+		Lecture lecture4 = new Lecture(4, "DTO", course, null);
 
-		List<Lecture> lectures = new ArrayList<Lecture>();
+		Set<Lecture> lectures = new LinkedHashSet<Lecture>();
 		lectures.add(lecture1);
 		lectures.add(lecture2);
+		lectures.add(lecture3);
+		lectures.add(lecture4);
 
 		course.setLectures(lectures);
 
@@ -100,7 +101,11 @@ class SignMeApplicationTests {
 
 		course = courseDAO.findById(1).get();
 
-		assertEquals(course.getLectures().size(), 2);
+		for (Lecture lecture : course.getLectures()) {
+			System.out.println(lecture.getDescription());
+		}
+
+		assertEquals(course.getLectures().size(), 4);
 	}
 
 }

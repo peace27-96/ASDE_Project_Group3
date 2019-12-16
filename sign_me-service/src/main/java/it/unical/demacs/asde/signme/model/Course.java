@@ -1,6 +1,5 @@
 package it.unical.demacs.asde.signme.model;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -23,13 +22,13 @@ public class Course {
 	Set<User> students;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch = FetchType.EAGER)
-	private List<Lecture> lectures;
+	private Set<Lecture> lectures;
 
 	public Course() {
 		super();
 	}
 
-	public Course(int courseId, String subject, Set<User> students, List<Lecture> lectures) {
+	public Course(int courseId, String subject, Set<User> students, Set<Lecture> lectures) {
 		super();
 		this.courseId = courseId;
 		this.subject = subject;
@@ -61,11 +60,11 @@ public class Course {
 		this.students = students;
 	}
 
-	public List<Lecture> getLectures() {
+	public Set<Lecture> getLectures() {
 		return lectures;
 	}
 
-	public void setLectures(List<Lecture> lectures) {
+	public void setLectures(Set<Lecture> lectures) {
 		this.lectures = lectures;
 	}
 

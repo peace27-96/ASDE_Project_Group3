@@ -22,7 +22,7 @@ public class Lecture {
 	private Date date;
 
 	@ManyToMany(mappedBy = "attendedLectures")
-	private Set<User> followingCourses;
+	private Set<User> students;
 
 	@ManyToOne
 	private Course course;
@@ -31,11 +31,12 @@ public class Lecture {
 		super();
 	}
 
-	public Lecture(Integer lectureId, String description, Course course) {
+	public Lecture(Integer lectureId, String description, Course course, Set<User> students) {
 		super();
 		this.lectureId = lectureId;
 		this.description = description;
 		this.course = course;
+		this.students = students;
 	}
 
 	public Integer getLectureId() {
@@ -62,12 +63,12 @@ public class Lecture {
 		this.date = date;
 	}
 
-	public Set<User> getFollowingCourses() {
-		return followingCourses;
+	public Set<User> getStudents() {
+		return students;
 	}
 
-	public void setFollowingCourses(Set<User> followingCourses) {
-		this.followingCourses = followingCourses;
+	public void setStudents(Set<User> students) {
+		this.students = students;
 	}
 
 	public Course getCourse() {

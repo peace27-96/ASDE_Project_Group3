@@ -4,6 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import it.unical.demacs.asde.signme.model.Subscription;
 
-public interface InvitationDAO extends CrudRepository<Subscription, Integer> {
+public interface SubscriptionDAO extends CrudRepository<Subscription, Integer> {
 
 }
