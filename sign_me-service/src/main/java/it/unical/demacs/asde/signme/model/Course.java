@@ -5,8 +5,11 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -15,8 +18,13 @@ import javax.persistence.Table;
 public class Course {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer courseId;
+	
 	private String subject;
+	
+	@ManyToOne
+	private User lecturer;
 
 	@ManyToMany(mappedBy = "followingCourses")
 	Set<User> students;
@@ -28,19 +36,20 @@ public class Course {
 		super();
 	}
 
-	public Course(int courseId, String subject, Set<User> students, Set<Lecture> lectures) {
+	public Course(Integer courseId, String subject, Set<User> students, Set<Lecture> lectures, User lecturer) {
 		super();
 		this.courseId = courseId;
 		this.subject = subject;
 		this.students = students;
 		this.lectures = lectures;
+		this.lecturer = lecturer;
 	}
 
-	public int getCourseId() {
+	public Integer getCourseId() {
 		return courseId;
 	}
 
-	public void setCourseId(int courseId) {
+	public void setCourseId(Integer courseId) {
 		this.courseId = courseId;
 	}
 
@@ -67,9 +76,14 @@ public class Course {
 	public void setLectures(Set<Lecture> lectures) {
 		this.lectures = lectures;
 	}
-
-	public void setCourseId(Integer courseId) {
-		this.courseId = courseId;
+	
+	public User getLecturer() {
+		return lecturer;
 	}
+	
+	public void setLecturer(User lecturer) {
+		this.lecturer = lecturer;
+	}
+	
 
 }

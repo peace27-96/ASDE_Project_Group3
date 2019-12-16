@@ -16,7 +16,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
+@Service
 public class FaceRecognitionService {
 
 	// key1 8ac7a514e86048a087f9fca5180a0981

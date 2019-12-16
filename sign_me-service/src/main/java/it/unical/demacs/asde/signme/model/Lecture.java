@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -16,6 +18,7 @@ import javax.persistence.TemporalType;
 public class Lecture {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer lectureId;
 	private String description;
 	@Temporal(TemporalType.DATE)

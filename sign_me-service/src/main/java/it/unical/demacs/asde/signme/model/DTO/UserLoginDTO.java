@@ -1,4 +1,4 @@
-package it.unical.demacs.asde.signme.model;
+package it.unical.demacs.asde.signme.model.DTO;
 
 public class UserLoginDTO {
 	

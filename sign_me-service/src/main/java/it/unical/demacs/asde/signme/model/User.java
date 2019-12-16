@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -21,6 +22,9 @@ public class User {
 	private String password;
 	private String firstName;
 	private String lastName;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "lecturer", fetch = FetchType.EAGER)
+	private Set<Course> createdCourses;
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER) // lazy load
 	@JoinTable(name = "Subscriptions", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
@@ -32,13 +36,14 @@ public class User {
 			@JoinColumn(name = "lectureId") })
 	private Set<Lecture> attendedLectures;
 
-	public User(String email, String password, String first_name, String lastName, Set<Course> followingCourses,
-			Set<Lecture> attendedLectures) {
+	public User(String email, String password, String firstName, String lastName, Set<Course> createdCourses,
+			Set<Course> followingCourses, Set<Lecture> attendedLectures) {
 		super();
 		this.email = email;
 		this.password = password;
-		this.firstName = first_name;
+		this.firstName = firstName;
 		this.lastName = lastName;
+		this.createdCourses = createdCourses;
 		this.followingCourses = followingCourses;
 		this.attendedLectures = attendedLectures;
 	}
@@ -93,6 +98,14 @@ public class User {
 
 	public void setAttendedLectures(Set<Lecture> attendedLectures) {
 		this.attendedLectures = attendedLectures;
+	}
+	
+	public void setCreatedCourses(Set<Course> createdCourses) {
+		this.createdCourses = createdCourses;
+	}
+	
+	public Set<Course> getCreatedCourses() {
+		return createdCourses;
 	}
 
 }

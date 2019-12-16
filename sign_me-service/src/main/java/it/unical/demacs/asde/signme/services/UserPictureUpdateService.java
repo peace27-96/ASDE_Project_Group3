@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.unical.demacs.asde.signme.model.User;
-import it.unical.demacs.asde.signme.model.UserPictureUpdateDTO;
+import it.unical.demacs.asde.signme.model.DTO.UserPictureUpdateDTO;
 import it.unical.demacs.asde.signme.repositories.UserDAO;
 
 @Service
