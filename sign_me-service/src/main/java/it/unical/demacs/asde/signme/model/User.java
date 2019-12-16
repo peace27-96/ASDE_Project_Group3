@@ -1,6 +1,6 @@
 package it.unical.demacs.asde.signme.model;
 
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -20,21 +20,28 @@ public class User {
 	private String password;
 	private String firstName;
 	private String lastName;
-	
+
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER) // lazy load
+	@JoinTable(name = "Subscriptions", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
+			@JoinColumn(name = "courseId") })
+	private List<Course> followingCourses;
+
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable( name = "Subscriptions", 
-				joinColumns = {@JoinColumn(name = "email")},
-				inverseJoinColumns = {@JoinColumn(name = "courseId")})
-	private Set<Course> followingCourses;
-	
-	public User(String email, String password, String first_name, String lastName) {
+	@JoinTable(name = "Attendances", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
+			@JoinColumn(name = "lectureId") })
+	private List<Lecture> attendedLectures;
+
+	public User(String email, String password, String first_name, String lastName, List<Course> followingCourses,
+			List<Lecture> attendedLectures) {
 		super();
 		this.email = email;
 		this.password = password;
 		this.firstName = first_name;
 		this.lastName = lastName;
+		this.followingCourses = followingCourses;
+		this.attendedLectures = attendedLectures;
 	}
-	
+
 	public User() {
 		super();
 	}
@@ -71,12 +78,20 @@ public class User {
 		this.lastName = lastName;
 	}
 
-	public Set<Course> getFollowingCourses() {
+	public List<Course> getFollowingCourses() {
 		return followingCourses;
 	}
 
-	public void setFollowingCourses(Set<Course> followingCourses) {
+	public void setFollowingCourses(List<Course> followingCourses) {
 		this.followingCourses = followingCourses;
 	}
-	
+
+	public List<Lecture> getAttendedLectures() {
+		return attendedLectures;
+	}
+
+	public void setAttendedLectures(List<Lecture> attendedLectures) {
+		this.attendedLectures = attendedLectures;
+	}
+
 }
