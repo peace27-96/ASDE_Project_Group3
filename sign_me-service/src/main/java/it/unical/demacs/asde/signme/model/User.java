@@ -21,11 +21,17 @@ public class User {
 	private String firstName;
 	private String lastName;
 	
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER) // lazy load
 	@JoinTable( name = "Subscriptions", 
 				joinColumns = {@JoinColumn(name = "email")},
 				inverseJoinColumns = {@JoinColumn(name = "courseId")})
 	private Set<Course> followingCourses;
+	
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinTable( name = "Attendances", 
+				joinColumns = {@JoinColumn(name = "email")},
+				inverseJoinColumns = {@JoinColumn(name = "lectureId")})
+	private Set<Lecture> attendedLectures;
 
 	public User(String email, String password, String first_name, String lastName) {
 		super();
@@ -77,6 +83,14 @@ public class User {
 
 	public void setFollowingCourses(Set<Course> followingCourses) {
 		this.followingCourses = followingCourses;
+	}
+
+	public Set<Lecture> getAttendedLectures() {
+		return attendedLectures;
+	}
+
+	public void setAttendedLectures(Set<Lecture> attendedLectures) {
+		this.attendedLectures = attendedLectures;
 	}
 	
 }
