@@ -6,18 +6,18 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Invitation")
-public class Subscription {
+public class SubscriptionRequest {
 
 	@Id
 	private Integer subscriptionId;
 	private String student;
 	private Integer course;
 
-	public Subscription() {
+	public SubscriptionRequest() {
 		super();
 	}
 
-	public Subscription(Integer subscriptionId, String student, Integer course) {
+	public SubscriptionRequest(Integer subscriptionId, String student, Integer course) {
 		super();
 		this.subscriptionId = subscriptionId;
 		this.student = student;

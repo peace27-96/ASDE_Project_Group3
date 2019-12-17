@@ -1,27 +1,15 @@
 package it.unical.demacs.asde.signme.model.DTO;
 
 public class CourseDTO {
-	
-	private String email;
-	
-	private String subject;
 
-	public String getEmail() {
-		return email;
+	private Integer courseId;
+
+	public Integer getCourseId() {
+		return courseId;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setCourseId(Integer courseId) {
+		this.courseId = courseId;
 	}
-
-	public String getSubject() {
-		return subject;
-	}
-
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
-	
-	
 
 }
