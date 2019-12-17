@@ -10,8 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import it.unical.demacs.asde.signme.model.DTO.UserPictureUpdateDTO;
 
-
-
 @Service
 public class UploadImageService {
 
@@ -21,15 +19,16 @@ public class UploadImageService {
 	public String updatePicture(MultipartFile file) {
 		try {
 
-			String extension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename()); 
+			String extension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename());
 
-			if(!(extension.equals("jpeg") || extension.equals("png")) )
-				return "Failed";
-			
+			if (!(extension.equals("jpeg") || extension.equals("png") || extension.equals("jpg")
+					|| extension.equals("bmp")))
+				return "Wrong extension";
+
 			byte[] bytes = file.getBytes();
 			Path path = Paths.get(FOLDER + file.getOriginalFilename());
 			Files.write(path, bytes);
-			
+
 			System.out.println(path);
 
 		} catch (IOException e) {
