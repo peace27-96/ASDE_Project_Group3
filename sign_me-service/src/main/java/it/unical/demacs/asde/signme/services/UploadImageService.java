@@ -19,8 +19,8 @@ import it.unical.demacs.asde.signme.repositories.UserDAO;
 public class UploadImageService {
 
 	// Save the uploaded file to this folder
-	private static String FOLDER = "res/profilePictures/";
-	private static String TMP = "res/tmp/";
+	private static String FOLDER = "src/main/resources/static/profilePictures/";
+	private static String TMP = "src/main/resources/static/tmp/";
 
 	@Autowired
 	private UserDAO userDAO;
@@ -33,20 +33,31 @@ public class UploadImageService {
 
 	public String updateProfilePicture(MultipartFile file) {
 		try {
+			String fileName = file.getOriginalFilename();
 			if (isImage(file))
+
 				return "Wrong extension";
 			byte[] bytes = file.getBytes();
-			Path path = Paths.get(FOLDER + file.getOriginalFilename());
+			Path path = Paths.get(FOLDER + fileName);
 			Files.write(path, bytes);
-			String email = file.getOriginalFilename().split(".")[0];
-			User user = userDAO.findById(email).get();
-			user.setProfilePicture(path.toString());
-			userDAO.save(user);
+			
+			System.out.println(fileName);
 
+			String[] splitOnDot = fileName.split("\\.");
+
+			String extension = splitOnDot[splitOnDot.length - 1];
+			String email = fileName.replace("." + extension, "");
+
+			System.out.println(email);
+
+			User user = userDAO.findById(email).get();
+			user.setProfilePicture("profilePictures/" + fileName);
+			userDAO.save(user);
+			return "profilePictures/" + fileName;
 		} catch (IOException e) {
 			e.printStackTrace();
+			return "Failed";
 		}
-		return "Success";
 	}
 
 	public ArrayList<String> uploadAttendacesPicture(MultipartFile file) {

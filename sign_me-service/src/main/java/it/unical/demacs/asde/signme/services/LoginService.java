@@ -17,13 +17,17 @@ public class LoginService {
 	private UserDAO userDAO;
 
 	public User login(UserLoginDTO userLoginDTO) {
+		try {
+			User user = userDAO.findById(userLoginDTO.getEmail()).get();
+			if (user != null)
+				if (user.getPassword().equals(userLoginDTO.getPassword())) {
+					System.out.println(user.toString());
+					return user;
+				}
+		} catch (NoSuchElementException e) {
+			return null;
 
-		User user = userDAO.findById(userLoginDTO.getEmail()).get();
-
-		if (user != null)
-			if (user.getPassword().equals(userLoginDTO.getPassword()))
-				return user;
-
+		}
 		return null;
 	}
 

@@ -2,31 +2,20 @@ package it.unical.demacs.asde.signme;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.imageio.ImageIO;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import it.unical.demacs.asde.signme.model.Course;
+import it.unical.demacs.asde.signme.model.Lecture;
 import it.unical.demacs.asde.signme.model.User;
 import it.unical.demacs.asde.signme.repositories.CourseDAO;
 import it.unical.demacs.asde.signme.repositories.LectureDAO;
 import it.unical.demacs.asde.signme.repositories.UserDAO;
 import it.unical.demacs.asde.signme.services.FaceRecognitionService;
-import it.unical.demacs.asde.signme.services.UploadImageService;
-import javassist.expr.NewArray;
 
 @SpringBootTest
 class SignMeApplicationTests {
@@ -50,8 +39,9 @@ class SignMeApplicationTests {
 
 		cris.setEmail("cris");
 		kiello.setEmail("kiello");
-		cris.setProfilePicture("res/profilePictures/cristian.jpeg");
-		kiello.setProfilePicture("res/profilePictures/kiello.jpeg");
+
+		cris.setProfilePicture("src/main/resources/profilePictures/a@a.a.jpg");
+		kiello.setProfilePicture("src/main/resources/profilePictures/a@a.a.jpg");
 
 		userDAO.save(cris);
 		userDAO.save(kiello);
@@ -82,26 +72,53 @@ class SignMeApplicationTests {
 
 		courseDAO.save(course);
 
+		Lecture lecture1 = new Lecture();
+		Lecture lecture2 = new Lecture();
+
+		course = courseDAO.findById(1).get();
+
+		lecture1.setCourse(course);
+		lecture2.setCourse(course);
+
+		lectureDAO.save(lecture1);
+		lectureDAO.save(lecture2);
+
+		lecture1 = lectureDAO.findById(2).get();
+		lecture2 = lectureDAO.findById(3).get();
+
+		Set<Lecture> lectures = new HashSet<>();
+		lectures.add(lecture1);
+		lectures.add(lecture2);
+
+		course.setLectures(lectures);
+
+		courseDAO.save(course);
+
+		course = courseDAO.findById(1).get();
+
 		assertEquals(2, course.getStudents().size());
 
-		try {
-			File file = new File("res/tmp/1.jpeg");
-			BufferedImage bufferedImage = ImageIO.read(file);
-			WritableRaster raster = bufferedImage.getRaster();
-			DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
-			byte[] bytes = data.getData();
-			MultipartFile classPicture = new MockMultipartFile("1.jpeg", "1.jpeg", "jpeg", bytes);
+		assertEquals(2, course.getLectures().size());
 
-			ArrayList<String> studentPictures = new ArrayList<>();
-			for (User user : course.getStudents()) {
-				studentPictures.add(user.getProfilePicture());
-			}
-
-			ArrayList<String> attendances = uploadImageService.getAttendances("res/tmp/1.jpeg", studentPictures);
-
-		} catch (IOException e) { // TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			File file = new File("src/main/resources/static/tmp/");
+//			BufferedImage bufferedImage = ImageIO.read(file);
+//			WritableRaster raster = bufferedImage.getRaster();
+//			DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
+//			byte[] bytes = data.getData();
+//			MultipartFile classPicture = new MockMultipartFile("1.jpeg", "1.jpeg", "jpeg", bytes);
+//
+//			ArrayList<String> studentPictures = new ArrayList<>();
+//			for (User user : course.getStudents()) {
+//				studentPictures.add(user.getProfilePicture());
+//			}
+//
+//			ArrayList<String> attendances = uploadImageService.getAttendances("src/main/resources/static/tmp/", studentPictures);
+//
+//		} catch (IOException e) { // TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 	}
+
 }

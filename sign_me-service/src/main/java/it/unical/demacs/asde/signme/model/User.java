@@ -12,6 +12,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "User")
 public class User {
@@ -29,11 +31,13 @@ public class User {
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER) // lazy load
 	@JoinTable(name = "Subscriptions", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
 			@JoinColumn(name = "courseId") })
+	@JsonIgnore
 	private Set<Course> followingCourses;
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "Attendances", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
 			@JoinColumn(name = "lectureId") })
+	@JsonIgnore
 	private Set<Lecture> attendedLectures;
 
 	public User() {
@@ -104,4 +108,10 @@ public class User {
 		return createdCourses;
 	}
 
+	@Override
+	public String toString() {
+		return this.email + " " + this.password + " " + this.firstName + " " + this.lastName + " " + this.profilePicture
+				+ " " + this.createdCourses.size() + " " + this.followingCourses.size() + " "
+				+ this.attendedLectures.size();
+	}
 }

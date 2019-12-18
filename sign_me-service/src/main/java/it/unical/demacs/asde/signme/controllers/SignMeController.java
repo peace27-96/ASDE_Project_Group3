@@ -106,5 +106,6 @@ public class SignMeController {
 	public ArrayList<String> uploadAttendacesPicture(@RequestBody MultipartFile file) {
 		return uploadImageService.uploadAttendacesPicture(file);
 	}
+	
 
 }

@@ -52,7 +52,8 @@ public class CourseService {
 
 		courseDAO.save(course);
 
-		return "success";
+		return course.getCourseId().toString();
+
 	}
 
 	public String createLecture(LectureDTO lectureDTO) {
@@ -82,7 +83,7 @@ public class CourseService {
 	public Set<Lecture> getCourseLectures(CourseDTO courseDTO) {
 
 		return courseDAO.findById(courseDTO.getCourseId()).get().getLectures();
-	
+
 	}
 
 }

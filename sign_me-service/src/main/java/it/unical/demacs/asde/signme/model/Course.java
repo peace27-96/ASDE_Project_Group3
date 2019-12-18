@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "Course")
 public class Course {
@@ -20,13 +22,14 @@ public class Course {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer courseId;
-	
+
 	private String subject;
-	
+
 	@ManyToOne
+	@JsonIgnore
 	private User lecturer;
 
-	@ManyToMany(mappedBy = "followingCourses")
+	@ManyToMany(mappedBy = "followingCourses", fetch = FetchType.EAGER)
 	Set<User> students;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch = FetchType.EAGER)
@@ -76,14 +79,13 @@ public class Course {
 	public void setLectures(Set<Lecture> lectures) {
 		this.lectures = lectures;
 	}
-	
+
 	public User getLecturer() {
 		return lecturer;
 	}
-	
+
 	public void setLecturer(User lecturer) {
 		this.lecturer = lecturer;
 	}
-	
 
 }
