@@ -1,10 +1,10 @@
 package it.unical.demacs.asde.signme.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +25,6 @@ import it.unical.demacs.asde.signme.model.DTO.UserLoginDTO;
 import it.unical.demacs.asde.signme.model.DTO.UserPictureUpdateDTO;
 import it.unical.demacs.asde.signme.model.DTO.UserRegistrationDTO;
 import it.unical.demacs.asde.signme.services.CourseService;
-import it.unical.demacs.asde.signme.services.FaceRecognitionService;
 import it.unical.demacs.asde.signme.services.LoginService;
 import it.unical.demacs.asde.signme.services.SubscriptionRequestService;
 import it.unical.demacs.asde.signme.services.UploadImageService;
@@ -36,8 +35,6 @@ public class SignMeController {
 
 	@Autowired
 	private LoginService loginService;
-	@Autowired
-	private FaceRecognitionService faceRecognitionService;
 	@Autowired
 	private CourseService courseService;
 	@Autowired
@@ -90,20 +87,24 @@ public class SignMeController {
 		return courseService.createLecture(lectureDTO);
 	}
 
-	
 	@PostMapping("/createSubscriptionRequest")
 	public void createSubscriptionRequest(SubscriptionRequestDTO subscriptionRequestDTO) {
 		subscriptionRequestService.createSubscriptionRequest(subscriptionRequestDTO);
 	}
-	
+
 	@GetMapping("getSubscriptionRequests")
-	public Set<SubscriptionRequest> getSubscriptionRequests(CourseDTO courseDTO){
+	public Set<SubscriptionRequest> getSubscriptionRequests(CourseDTO courseDTO) {
 		return subscriptionRequestService.getSubscriptionRequests(courseDTO);
 	}
-	
-	@PostMapping(value = "/updatePicture")
-	public String uploadFile(@RequestBody MultipartFile file) {
-		return uploadImageService.updatePicture(file);
+
+	@PostMapping("/updateProfilePicture")
+	public String updateProfilePicture(@RequestBody MultipartFile file) {
+		return uploadImageService.updateProfilePicture(file);
+	}
+
+	@PostMapping("/uploadAttendacesPicture")
+	public ArrayList<String> uploadAttendacesPicture(@RequestBody MultipartFile file) {
+		return uploadImageService.uploadAttendacesPicture(file);
 	}
 
 }

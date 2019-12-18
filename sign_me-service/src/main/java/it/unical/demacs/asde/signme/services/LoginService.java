@@ -15,27 +15,27 @@ public class LoginService {
 
 	@Autowired
 	private UserDAO userDAO;
-	
+
 	public User login(UserLoginDTO userLoginDTO) {
-		
+
 		User user = userDAO.findById(userLoginDTO.getEmail()).get();
-		
-		if(user != null)
-			if(user.getPassword().equals(userLoginDTO.getPassword()))
+
+		if (user != null)
+			if (user.getPassword().equals(userLoginDTO.getPassword()))
 				return user;
-		
+
 		return null;
 	}
-	
+
 	public User register(UserRegistrationDTO userRegistrationDTO) {
 		try {
 			userDAO.findById(userRegistrationDTO.getEmail()).get();
-		}catch(NoSuchElementException e){
-			User u = new User(userRegistrationDTO.getEmail(),
-					userRegistrationDTO.getPassword(),
-					userRegistrationDTO.getFirstName(),
-					userRegistrationDTO.getLastName(),
-					null,null,null);
+		} catch (NoSuchElementException e) {
+			User u = new User();
+			u.setEmail(userRegistrationDTO.getEmail());
+			u.setPassword(userRegistrationDTO.getPassword());
+			u.setFirstName(userRegistrationDTO.getFirstName());
+			u.setLastName(userRegistrationDTO.getLastName());
 			userDAO.save(u);
 			return u;
 		}

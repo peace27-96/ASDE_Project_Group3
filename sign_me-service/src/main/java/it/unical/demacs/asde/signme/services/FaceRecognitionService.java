@@ -28,13 +28,6 @@ public class FaceRecognitionService {
 	private static final String uriBaseDetect = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect";
 	private static final String uriBaseVerify = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/verify";
 
-	private static final String imageWithFaces1 = "res/kiello.jpeg";
-	private static final String imageWithFaces2 = "res/cristian.jpeg";
-	private static final String imageWithFaces3 = "res/nuccia.jpeg";
-	private static final String imageWithFaces4 = "res/domenico.jpeg";
-	private static final String imageWithFaces5 = "res/walter.jpeg";
-	private static final String imageWithFaces6 = "res/classe.jpeg";
-
 	private HttpClient httpclient;
 	private URIBuilder builder;
 	private URI uri;
@@ -46,27 +39,21 @@ public class FaceRecognitionService {
 		httpclient = HttpClientBuilder.create().build();
 	}
 
-	public void run() {
-		HashMap<String, String> students = new HashMap<>();
-		ArrayList<String> studentsFaces = new ArrayList<>();
-		String studentsPicture = detect(imageWithFaces6);
-		ArrayList<String> pictureFaceIDs = getPictureIDs(studentsPicture);
+	public ArrayList<String> getAttendances(String classPicture, ArrayList<String> studentPictures) {
+		HashMap<String, String> studentFaceIDs = new HashMap<>();
+		classPicture = detect(classPicture);
+		ArrayList<String> classFaceIDs = getPictureIDs(classPicture);
 
-		studentsFaces.add(imageWithFaces1);
-		studentsFaces.add(imageWithFaces2);
-		studentsFaces.add(imageWithFaces3);
-		studentsFaces.add(imageWithFaces4);
-		studentsFaces.add(imageWithFaces5);
-
-		for (String face : studentsFaces) {
-			String json = detect(face);
-			students.put(face, getStudentID(json));
+		for (String face : studentPictures) {
+			String studentFaceID = detect(face);
+			studentFaceIDs.put(face, getStudentID(studentFaceID));
 		}
 
-		compute(students, pictureFaceIDs);
+		return compute(studentFaceIDs, classFaceIDs);
 	}
 
-	private void compute(HashMap<String, String> students, ArrayList<String> pictureFaceIDs) {
+	private ArrayList<String> compute(HashMap<String, String> students, ArrayList<String> pictureFaceIDs) {
+		ArrayList<String> attendances = new ArrayList<>();
 		for (String key : students.keySet()) {
 			String foundStudentKey = "";
 			for (String id : pictureFaceIDs) {
@@ -78,8 +65,10 @@ public class FaceRecognitionService {
 			}
 			if (!foundStudentKey.equals("")) {
 				pictureFaceIDs.remove(foundStudentKey);
+				attendances.add(foundStudentKey);
 			}
 		}
+		return attendances;
 	}
 
 	private String detect(String image) {

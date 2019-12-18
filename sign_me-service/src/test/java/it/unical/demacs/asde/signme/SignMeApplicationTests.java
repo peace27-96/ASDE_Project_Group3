@@ -2,21 +2,31 @@ package it.unical.demacs.asde.signme;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
-import it.unical.demacs.asde.signme.model.*;
+import it.unical.demacs.asde.signme.model.Course;
+import it.unical.demacs.asde.signme.model.User;
 import it.unical.demacs.asde.signme.repositories.CourseDAO;
 import it.unical.demacs.asde.signme.repositories.LectureDAO;
 import it.unical.demacs.asde.signme.repositories.UserDAO;
+import it.unical.demacs.asde.signme.services.FaceRecognitionService;
+import it.unical.demacs.asde.signme.services.UploadImageService;
+import javassist.expr.NewArray;
 
 @SpringBootTest
 class SignMeApplicationTests {
@@ -31,121 +41,67 @@ class SignMeApplicationTests {
 	private LectureDAO lectureDAO;
 
 	@Test
-	void userDAOWorks() {
-		userDAO.save(new User("foo@foo.com", "foo", "malvio", "foo", null, null, null));
-		User malvio = userDAO.findById("foo@foo.com").get();
+	public void attendacesWorks() {
+
+		FaceRecognitionService uploadImageService = new FaceRecognitionService();
+
+		User cris = new User();
+		User kiello = new User();
+
+		cris.setEmail("cris");
+		kiello.setEmail("kiello");
+		cris.setProfilePicture("res/profilePictures/cristian.jpeg");
+		kiello.setProfilePicture("res/profilePictures/kiello.jpeg");
+
+		userDAO.save(cris);
+		userDAO.save(kiello);
+
+		cris = userDAO.findById("cris").get();
+		kiello = userDAO.findById("kiello").get();
+
+		Set<User> students = new HashSet<>();
+
+		students.add(cris);
+		students.add(kiello);
+
+		Course course = new Course();
+		courseDAO.save(course);
+
+		course = courseDAO.findById(1).get();
+
+		cris.setFollowingCourses(new HashSet<Course>());
+		cris.getFollowingCourses().add(course);
+
+		kiello.setFollowingCourses(new HashSet<Course>());
+		kiello.getFollowingCourses().add(course);
+
+		userDAO.save(cris);
+		userDAO.save(kiello);
+
+		course.setStudents(students);
+
+		courseDAO.save(course);
+
+		assertEquals(2, course.getStudents().size());
 
 		try {
-			User cris = userDAO.findById("cris@cris.com").get();
-		} catch (NoSuchElementException e) {
-		}
+			File file = new File("res/tmp/1.jpeg");
+			BufferedImage bufferedImage = ImageIO.read(file);
+			WritableRaster raster = bufferedImage.getRaster();
+			DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
+			byte[] bytes = data.getData();
+			MultipartFile classPicture = new MockMultipartFile("1.jpeg", "1.jpeg", "jpeg", bytes);
 
-		assertEquals(malvio.getFirstName(), "malvio");
-	}
+			ArrayList<String> studentPictures = new ArrayList<>();
+			for (User user : course.getStudents()) {
+				studentPictures.add(user.getProfilePicture());
+			}
 
-	@Test
-	void courseDAOWorks() {
+			ArrayList<String> attendances = uploadImageService.getAttendances("res/tmp/1.jpeg", studentPictures);
 
-		User cris = new User("cris@gmail.com", "bu", "Cristian", "De Marco", new HashSet<>(), new HashSet<>(), null);
-
-		Set<Course> courses = new HashSet<>();
-
-		Course agile = new Course();
-		agile.setLecturer(cris);
-		agile.setSubject("Agile");
-
-		courses.add(agile);
-
-		cris.setCreatedCourses(courses);
-
-		userDAO.save(cris);
-
-		List<Course> crisCourses = new ArrayList<>(courseDAO.findCoursesByLecturerEmail(cris.getEmail()));
-		assertEquals(1, crisCourses.size());
-
-		Course secure = new Course();
-		secure.setLecturer(cris);
-		courseDAO.save(secure);
-
-		crisCourses = new ArrayList<>(courseDAO.findCoursesByLecturerEmail(cris.getEmail()));
-		assertEquals(2, crisCourses.size());
-
-	}
-
-	@Test
-	void userCoursesMtMWorks() {
-		userDAO.save(new User("kiello@foo.com", "foo", "kiello", "pace", null, null, null));
-		userDAO.save(new User("cris@foo.com", "foo", "cris", "dema", null, null, null));
-		User kiello = userDAO.findUserByFirstName("kiello");
-		User cris = userDAO.findUserByFirstName("cris");
-
-		assertEquals(kiello.getFirstName(), "kiello");
-		assertEquals(cris.getLastName(), "dema");
-
-		Set<Course> courses = new LinkedHashSet<Course>();
-		Course agile = new Course();
-		agile.setSubject("Agile");
-
-		Course secure = new Course();
-		secure.setSubject("Secure");
-
-		courses.add(agile);
-		courses.add(secure);
-
-		cris.setFollowingCourses(courses);
-
-		userDAO.save(cris);
-
-		cris = userDAO.findUserByFirstName("cris");
-
-//		assertEquals(cris.getFollowingCourses().size(), 2);
-
-	}
-
-	@Test
-	void userLecturesMtMWorks() {
-		User kiello = new User("kiello@foo.com", "foo", "kiello", "pace", null, null, null);
-
-		Lecture lecture1 = new Lecture();
-		Lecture lecture2 = new Lecture();
-
-		lecture1.setDescription("Scrum");
-		lecture2.setDescription("Bu");
-
-		lectureDAO.save(lecture1);
-		lectureDAO.save(lecture2);
-
-		Iterable<Lecture> lectures = lectureDAO.findAll();
-
-		for (Lecture lecture : lectures) {
-			System.out.println(lecture.getLectureId() + " " + lecture.getDescription());
+		} catch (IOException e) { // TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
-
-	@Test
-	void lectureCourseWorks() {
-		Course agile = new Course();
-		agile.setSubject("Agile");
-
-		courseDAO.save(agile);
-
-		Lecture lecture1 = new Lecture();
-		lecture1.setDescription("First");
-		lecture1.setCourse(agile);
-
-		Lecture lecture2 = new Lecture();
-		lecture2.setDescription("Second");
-		lecture2.setCourse(agile);
-
-		lectureDAO.save(lecture1);
-		lectureDAO.save(lecture2);
-
-		Iterable<Course> courses = courseDAO.findAll();
-
-		for (Course course : courses) {
-			assertEquals(2, course.getLectures().size());
-		}
-	}
-
 }

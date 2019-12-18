@@ -1,6 +1,5 @@
 package it.unical.demacs.asde.signme.model;
 
-
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -22,7 +21,8 @@ public class User {
 	private String password;
 	private String firstName;
 	private String lastName;
-	
+	private String profilePicture;
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "lecturer", fetch = FetchType.EAGER)
 	private Set<Course> createdCourses;
 
@@ -36,20 +36,16 @@ public class User {
 			@JoinColumn(name = "lectureId") })
 	private Set<Lecture> attendedLectures;
 
-	public User(String email, String password, String firstName, String lastName, Set<Course> createdCourses,
-			Set<Course> followingCourses, Set<Lecture> attendedLectures) {
-		super();
-		this.email = email;
-		this.password = password;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.createdCourses = createdCourses;
-		this.followingCourses = followingCourses;
-		this.attendedLectures = attendedLectures;
-	}
-
 	public User() {
 		super();
+	}
+
+	public String getProfilePicture() {
+		return profilePicture;
+	}
+
+	public void setProfilePicture(String profilePicture) {
+		this.profilePicture = profilePicture;
 	}
 
 	public String getEmail() {
@@ -99,11 +95,11 @@ public class User {
 	public void setAttendedLectures(Set<Lecture> attendedLectures) {
 		this.attendedLectures = attendedLectures;
 	}
-	
+
 	public void setCreatedCourses(Set<Course> createdCourses) {
 		this.createdCourses = createdCourses;
 	}
-	
+
 	public Set<Course> getCreatedCourses() {
 		return createdCourses;
 	}
