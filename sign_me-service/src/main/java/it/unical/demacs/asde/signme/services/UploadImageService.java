@@ -34,13 +34,12 @@ public class UploadImageService {
 	public String updateProfilePicture(MultipartFile file) {
 		try {
 			String fileName = file.getOriginalFilename();
-			if (isImage(file))
-
+			if (!isImage(file))
 				return "Wrong extension";
 			byte[] bytes = file.getBytes();
 			Path path = Paths.get(FOLDER + fileName);
 			Files.write(path, bytes);
-			
+
 			System.out.println(fileName);
 
 			String[] splitOnDot = fileName.split("\\.");
@@ -91,7 +90,7 @@ public class UploadImageService {
 
 	private boolean isImage(MultipartFile file) {
 		String extension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename());
-		return (!(extension.equals("jpeg") || extension.equals("png") || extension.equals("jpg")
+		return ((extension.equals("jpeg") || extension.equals("png") || extension.equals("jpg")
 				|| extension.equals("bmp")));
 	}
 
