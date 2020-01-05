@@ -1,6 +1,6 @@
 package it.unical.demacs.asde.signme.model.DTO;
 
-public class SubscriptionRequestDTO {
+public class InvitationDTO {
 	
 	private String email;
 	

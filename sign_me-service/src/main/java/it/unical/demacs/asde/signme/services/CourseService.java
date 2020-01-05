@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import it.unical.demacs.asde.signme.model.Course;
 import it.unical.demacs.asde.signme.model.Lecture;
 import it.unical.demacs.asde.signme.model.User;
+import it.unical.demacs.asde.signme.model.DTO.ConfirmSubscriptionDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseCreationDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDTO;
@@ -84,6 +85,27 @@ public class CourseService {
 
 		return courseDAO.findById(courseDTO.getCourseId()).get().getLectures();
 
+	}
+
+	public Set<Course> getAllCoursesAvailable(String email) {
+		return courseDAO.findCoursesAvailable(email);
+	}
+
+	public String confirmSubscription(ConfirmSubscriptionDTO confirmSubscriptionDTO) {
+		System.out.println(confirmSubscriptionDTO.getStudent() + " " + confirmSubscriptionDTO.getCourseId());
+		User user = userDAO.findById(confirmSubscriptionDTO.getStudent()).get();
+		Course course = courseDAO.findById(confirmSubscriptionDTO.getCourseId()).get();
+		Set<Course> followingCourse = user.getFollowingCourses();
+		followingCourse.add(course);
+		user.setFollowingCourses(followingCourse);
+		userDAO.save(user);
+		/*
+		 * Set<User> students = course.getStudents(); students.add(user);
+		 * course.setStudents(students); courseDAO.save(course);
+		 */
+		Course course2 = courseDAO.findById(confirmSubscriptionDTO.getCourseId()).get();
+		System.out.println("numero degli studenti che seguono il corso " + course2.getStudents().size());
+		return "success";
 	}
 
 }

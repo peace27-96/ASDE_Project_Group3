@@ -14,19 +14,21 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import it.unical.demacs.asde.signme.model.Course;
+import it.unical.demacs.asde.signme.model.Invitation;
 import it.unical.demacs.asde.signme.model.Lecture;
-import it.unical.demacs.asde.signme.model.SubscriptionRequest;
 import it.unical.demacs.asde.signme.model.User;
+import it.unical.demacs.asde.signme.model.DTO.ConfirmSubscriptionDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseCreationDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseDTO;
+import it.unical.demacs.asde.signme.model.DTO.InvitationDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDTO;
-import it.unical.demacs.asde.signme.model.DTO.SubscriptionRequestDTO;
+import it.unical.demacs.asde.signme.model.DTO.UserDTO;
 import it.unical.demacs.asde.signme.model.DTO.UserLoginDTO;
 import it.unical.demacs.asde.signme.model.DTO.UserPictureUpdateDTO;
 import it.unical.demacs.asde.signme.model.DTO.UserRegistrationDTO;
 import it.unical.demacs.asde.signme.services.CourseService;
+import it.unical.demacs.asde.signme.services.InvitationService;
 import it.unical.demacs.asde.signme.services.LoginService;
-import it.unical.demacs.asde.signme.services.SubscriptionRequestService;
 import it.unical.demacs.asde.signme.services.UploadImageService;
 
 @CrossOrigin("*")
@@ -40,7 +42,7 @@ public class SignMeController {
 	@Autowired
 	private UploadImageService uploadImageService;
 	@Autowired
-	private SubscriptionRequestService subscriptionRequestService;
+	private InvitationService invitationService;
 
 	@PostMapping("/login")
 	public User login(@RequestBody UserLoginDTO userLoginDTO) {
@@ -59,6 +61,7 @@ public class SignMeController {
 
 	@GetMapping("/getAllCourses")
 	public List<Course> getAllCourses() {
+		System.out.println("getAllCourses");
 		return courseService.getAllCourses();
 	}
 
@@ -77,6 +80,11 @@ public class SignMeController {
 		return courseService.getCourseLectures(courseDTO);
 	}
 
+	@PostMapping("/getAllCoursesAvailable")
+	public Set<Course> getAllCoursesAvailable(@RequestBody UserDTO userDTO) {
+		return courseService.getAllCoursesAvailable(userDTO.getEmail());
+	}
+
 	@PostMapping("/createCourse")
 	public String createCourse(@RequestBody CourseCreationDTO courseCreationDTO) {
 		return courseService.createCourse(courseCreationDTO);
@@ -88,13 +96,18 @@ public class SignMeController {
 	}
 
 	@PostMapping("/createSubscriptionRequest")
-	public void createSubscriptionRequest(SubscriptionRequestDTO subscriptionRequestDTO) {
-		subscriptionRequestService.createSubscriptionRequest(subscriptionRequestDTO);
+	public String createInvitation(@RequestBody InvitationDTO InvitationDTO) {
+		System.out.println(InvitationDTO);
+		System.out.println(InvitationDTO.getEmail());
+		System.out.println(InvitationDTO.getCourse());
+		return invitationService.createInvitation(InvitationDTO);
 	}
 
-	@GetMapping("getSubscriptionRequests")
-	public Set<SubscriptionRequest> getSubscriptionRequests(CourseDTO courseDTO) {
-		return subscriptionRequestService.getSubscriptionRequests(courseDTO);
+	@PostMapping("/getSubscriptionRequests")
+	public Set<Invitation> getInvitations(@RequestBody CourseDTO courseDTO) {
+		System.out.println(courseDTO);
+		System.out.println("getSubscription");
+		return invitationService.getInvitation(courseDTO.getCourseId());
 	}
 
 	@PostMapping("/updateProfilePicture")
@@ -106,6 +119,10 @@ public class SignMeController {
 	public ArrayList<String> uploadAttendacesPicture(@RequestBody MultipartFile file) {
 		return uploadImageService.uploadAttendacesPicture(file);
 	}
-	
+
+	@PostMapping("/confirmSubscription")
+	public String confirmSubscription(@RequestBody ConfirmSubscriptionDTO confirmSubscriptionDTO) {
+		return courseService.confirmSubscription(confirmSubscriptionDTO);
+	}
 
 }

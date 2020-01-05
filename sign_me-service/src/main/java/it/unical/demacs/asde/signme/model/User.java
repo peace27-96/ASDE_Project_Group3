@@ -1,5 +1,6 @@
 package it.unical.demacs.asde.signme.model;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -39,6 +40,10 @@ public class User {
 			@JoinColumn(name = "lectureId") })
 	@JsonIgnore
 	private Set<Lecture> attendedLectures;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "student", fetch = FetchType.EAGER)
+	@JsonIgnore
+	private List<Invitation> userInvitations;
 
 	public User() {
 		super();
@@ -106,6 +111,14 @@ public class User {
 
 	public Set<Course> getCreatedCourses() {
 		return createdCourses;
+	}
+
+	public List<Invitation> getUserInvitations() {
+		return userInvitations;
+	}
+
+	public void setUserInvitations(List<Invitation> userInvitations) {
+		this.userInvitations = userInvitations;
 	}
 
 	@Override
