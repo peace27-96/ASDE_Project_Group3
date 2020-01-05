@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import LectureItems from './LectureItems';
 import FolderList from './FolderList';
 import { Button } from '@material-ui/core';
 import LectureCreation from './LectureCreation'
+import StudentSubscriptions from './StudentSubscriptions'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -17,12 +18,13 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function FullWidthGrid() {
-    const classes = useStyles();
 
+
+export default function FullWidthGrid(props) {
+    const classes = useStyles();
     return (
         <div className={classes.root} >
-            <h1 style={{ paddingLeft: 15, display:"inline-block"}}>Agile Software Development - Lecturer View</h1>
+            <h1 style={{ paddingLeft: 15, display:"inline-block"}}>{props.getCurrentCourse().subject}</h1>
             <LectureCreation />
             <Grid container justify="center" xs={12} direction="row">
                 <Grid item xs={9} style={{paddingRight:30}}>
@@ -31,6 +33,7 @@ export default function FullWidthGrid() {
                 <Grid container xs={3} direction="column" spacing={3}>
                     <FolderList type="Avviso"/>
                     <FolderList type="Materiale"/>
+                    <StudentSubscriptions getCurrentCourse={props.getCurrentCourse}/>
                 </Grid>
             </Grid>
         </div>

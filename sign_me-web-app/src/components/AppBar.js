@@ -9,6 +9,13 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+import BaseInstance from '../http-client/BaseInstance'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -25,18 +32,11 @@ const useStyles = makeStyles(theme => ({
     },
   },
   search: {
-    //position: 'relative',
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.25),
     },
-    //marginLeft: 0,
-    //width: '100%',
-    //[theme.breakpoints.up('sm')]: {
-     // marginLeft: theme.spacing(1),
-     // width: 'auto',
-    //},
   },
   searchIcon: {
     width: theme.spacing(7),
@@ -63,78 +63,82 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function SearchAppBar() {
+
+export default function SearchAppBar(props) {
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
+  const [subject, setSubject] = React.useState("");
+  const [id_course, setCourseId] = React.useState(-1);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  
+  const handleClose = () => {
+    setSubject("");
+    setCourseId(-1);
+    setOpen(false);
+  };
+
+  const registerToCourse = () => {
+    console.log("REGISTER: " + id_course + " --- " + props.getUser())
+
+    BaseInstance.post("createSubscriptionRequest", { 
+      email: props.getUser(),
+      course: id_course})
+      .then((res) => {
+        console.log(res);
+    })
+    handleClose()
+  }
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" style={{"backgroundColor": "#009569"}}>
+      <AppBar position="static" style={{ "backgroundColor": "#009569" }}>
         <Toolbar>
           <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="open drawer">
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>Sign Me</Typography>
           <div className={classes.search}>
-            
             <Autocomplete
-              options={array}
-              getOptionLabel={option => option.title}
+              options={props.getAllCourses()}
+              getOptionLabel={option => option.subject}
               style={{ width: 300 }}
+              onChange={(event, newValue) => {
+                console.log(newValue);
+                setSubject(newValue.subject)
+                setCourseId(newValue.courseId)
+                handleClickOpen()
+              }}
               renderInput={params => (
-                <TextField {...params} className={classes.search} placeholder="Search" 
-                        variant="outlined" size="small" fullWidth />
+                <TextField {...params} className={classes.search} placeholder="Search" variant="outlined" size="small" fullWidth />
               )}
             />
-
           </div>
         </Toolbar>
       </AppBar>
+
+
+
+       <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+        <DialogTitle id="alert-dialog-title">Do you want to send your invitation request to "{subject}" course?</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            The professor will handle your subscription request as soon as possible.  
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Disagree
+          </Button>
+          <Button onClick={registerToCourse} color="primary" autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog> 
+
+
     </div>
   );
 }
-
-const array = [
-  { title: 'The Shawshank Redemption', year: 1994 },
-  { title: 'The Godfather', year: 1972 },
-  { title: 'The Godfather: Part II', year: 1974 },
-  { title: 'The Dark Knight', year: 2008 },
-  { title: '12 Angry Men', year: 1957 },
-  { title: "Schindler's List", year: 1993 },
-  { title: 'Pulp Fiction', year: 1994 },
-  { title: 'The Lord of the Rings: The Return of the King', year: 2003 },
-  { title: 'The Good, the Bad and the Ugly', year: 1966 },
-  { title: 'Fight Club', year: 1999 },
-  { title: 'The Lord of the Rings: The Fellowship of the Ring', year: 2001 },
-  { title: 'Star Wars: Episode V - The Empire Strikes Back', year: 1980 },
-  { title: 'Forrest Gump', year: 1994 },
-]
-
-/*
-<div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-<InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
-
-
-
-
-
-
-            <Autocomplete
-              id="combo-box-demo"
-              options={array}
-              getOptionLabel={option => option.title}
-              style={{ width: 300 }}
-              renderInput={params => (
-                <TextField {...params} label="Search..." variant="outlined" fullWidth />
-              )}
-            />
-
-*/

@@ -32,7 +32,7 @@ export default function RecipeReviewCard(props) {
     const [expanded, setExpanded] = React.useState(false);
 
     var imagePath = props.getPicture()
-    if(imagePath === null) imagePath = '../resources/user-icon.png'
+    if (imagePath === null) imagePath = '../resources/user-icon.png'
     else imagePath = 'http://localhost:8080/signme/' + imagePath
 
     const onFileChangeHandler = (e) => {
@@ -41,7 +41,7 @@ export default function RecipeReviewCard(props) {
         const formData = new FormData();
         var nameFile = e.target.files[0].name;
         var extension = nameFile.match(/.*\.(\w+)/)[1];
-        nameFile = props.getUser() + "." + extension
+        nameFile = props.getUser() + "." + extension.toLowerCase();
         formData.append('file', e.target.files[0], nameFile);
         BaseInstance.post("updateProfilePicture", formData)
             .then(res => {
@@ -55,7 +55,7 @@ export default function RecipeReviewCard(props) {
                     return
                 }
                 alert("File uploaded successfully.")
-                imagePath = 'http://192.168.43.219:8080/signme/' + res.data
+                imagePath = 'http://localhost:8080/signme/' + res.data
             })
     };
 
@@ -79,16 +79,16 @@ export default function RecipeReviewCard(props) {
                         </CardContent>
                     </Card>
                     <Card className={classes.summaryCard}>
-                        <Typography className={classes.summaryField}>Name: </Typography>
-                        <Typography className={classes.summaryField}>Surname: </Typography>
-                        <Typography className={classes.summaryField}>Email: </Typography>
+                        <Typography className={classes.summaryField}>Name: {props.getCredentials().firstName}</Typography>
+                        <Typography className={classes.summaryField}>Surname: {props.getCredentials().lastName}</Typography>
+                        <Typography className={classes.summaryField}>Email: {props.getCredentials().email}</Typography>
                     </Card>
-                    <CourseCreation getUser={props.getUser} addCourse={props.addCourse}/>
+                    <CourseCreation getUser={props.getUser} addCourse={props.addCourse} />
                 </Grid>
 
                 <Grid item xs={9} style={{ paddingLeft: "20px" }}>
                     <Card className={classes.coursesCard}>
-                        <TabPanel getCourses={props.getCourses}/>
+                        <TabPanel getCourses={props.getCourses} goToCoursePage={props.goToCoursePage} />
                     </Card>
                 </Grid>
             </Grid>

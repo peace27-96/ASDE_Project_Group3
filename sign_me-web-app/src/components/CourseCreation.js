@@ -32,7 +32,7 @@ export default function FormDialog(props) {
     console.log(description)
     BaseInstance.post("createCourse", { email: props.getUser(), subject: description }).then(res => { 
       alert(res.data) 
-      props.addCourse(res.data.courseId, description)
+      props.addCourse(res.data, description)
     })
     handleClose()
   }
@@ -43,14 +43,14 @@ export default function FormDialog(props) {
       Create Course
       </Fab>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">New Course</DialogTitle>
+        <DialogTitle id="form-dialog-title">Create new course</DialogTitle>
         <DialogContent>
         <form>
               <TextField
                 autoFocus
                 margin="dense"
                 id="description"
-                label="Description"
+                label="Course name"
                 onChange={handleDescriptionChange}
                 required
                 fullWidth/>

@@ -56,10 +56,10 @@ export default function SimpleTabs(props) {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <CoursesList getCourses={props.getCourses}/>
+        Item Two
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Item Two
+        <CoursesList getCourses={props.getCourses} goToCoursePage={props.goToCoursePage}/>
       </TabPanel>
     </div>
   );

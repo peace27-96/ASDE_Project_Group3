@@ -67,7 +67,7 @@ class Index extends React.Component {
     BaseInstance.post("login", { email: this.state.credentials.email, password: this.state.credentials.password })
       .then((res) => {
         console.log(res.data)
-        if(res.data.email !== undefined) this.props.logUser(res.data.email, res.data.profilePicture, res.data.createdCourses)
+        if(res.data.email !== undefined) this.props.logUser(res.data)
       })
   }
 

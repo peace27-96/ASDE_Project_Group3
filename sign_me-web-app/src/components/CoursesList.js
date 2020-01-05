@@ -5,6 +5,7 @@ import {useStyles} from './HomeStyle.js';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
+//import {BrowserHistory} from 'react-router-dom';
 
 export default function CoursesList(props) {
     const classes = useStyles();
@@ -20,7 +21,7 @@ export default function CoursesList(props) {
                 {courses.map((course) => (
                     <div key={course.courseId}>
                         <ListItem className={classes.courseItem} item xs={12}>
-                            <Button className={classes.courseName}>{course.subject}</Button>
+                            <Button className={classes.courseName} onClick={ () => { props.goToCoursePage(course) } }>{course.subject}</Button>
                             <Typography className={classes.courseAttendace}>9</Typography>  
                         </ListItem>
                         <Divider></Divider>
