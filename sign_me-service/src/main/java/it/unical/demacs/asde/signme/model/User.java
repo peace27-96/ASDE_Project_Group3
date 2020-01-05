@@ -29,10 +29,9 @@ public class User {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "lecturer", fetch = FetchType.EAGER)
 	private Set<Course> createdCourses;
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER) // lazy load
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "Subscriptions", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
 			@JoinColumn(name = "courseId") })
-	@JsonIgnore
 	private Set<Course> followingCourses;
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

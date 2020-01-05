@@ -8,13 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.unical.demacs.asde.signme.model.Course;
+import it.unical.demacs.asde.signme.model.Invitation;
 import it.unical.demacs.asde.signme.model.Lecture;
 import it.unical.demacs.asde.signme.model.User;
-import it.unical.demacs.asde.signme.model.DTO.ConfirmSubscriptionDTO;
+import it.unical.demacs.asde.signme.model.DTO.HandleSubscriptionDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseCreationDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDTO;
 import it.unical.demacs.asde.signme.repositories.CourseDAO;
+import it.unical.demacs.asde.signme.repositories.InvitationDAO;
 import it.unical.demacs.asde.signme.repositories.LectureDAO;
 import it.unical.demacs.asde.signme.repositories.UserDAO;
 
@@ -29,6 +31,9 @@ public class CourseService {
 
 	@Autowired
 	private LectureDAO lectureDAO;
+
+	@Autowired
+	private InvitationDAO InvitationDAO;
 
 	public List<Course> getStudentCourses(String email) {
 
@@ -88,24 +93,41 @@ public class CourseService {
 	}
 
 	public Set<Course> getAllCoursesAvailable(String email) {
-		return courseDAO.findCoursesAvailable(email);
+		User user = userDAO.findById(email).get();
+		return courseDAO.findCoursesAvailable(user);
 	}
 
-	public String confirmSubscription(ConfirmSubscriptionDTO confirmSubscriptionDTO) {
-		System.out.println(confirmSubscriptionDTO.getStudent() + " " + confirmSubscriptionDTO.getCourseId());
-		User user = userDAO.findById(confirmSubscriptionDTO.getStudent()).get();
-		Course course = courseDAO.findById(confirmSubscriptionDTO.getCourseId()).get();
+	public String confirmSubscription(HandleSubscriptionDTO handleSubscriptionDTO) {
+		System.out.println(handleSubscriptionDTO.getStudent() + " " + handleSubscriptionDTO.getCourseId());
+		User user = userDAO.findById(handleSubscriptionDTO.getStudent()).get();
+		Course course = courseDAO.findById(handleSubscriptionDTO.getCourseId()).get();
 		Set<Course> followingCourse = user.getFollowingCourses();
 		followingCourse.add(course);
 		user.setFollowingCourses(followingCourse);
 		userDAO.save(user);
-		/*
-		 * Set<User> students = course.getStudents(); students.add(user);
-		 * course.setStudents(students); courseDAO.save(course);
-		 */
-		Course course2 = courseDAO.findById(confirmSubscriptionDTO.getCourseId()).get();
+
+		Set<User> students = course.getStudents();
+		students.add(user);
+		course.setStudents(students);
+		courseDAO.save(course);
+
+		String key = user.getEmail() + course.getCourseId();
+		Invitation invitation = InvitationDAO.findById(key).get();
+		invitation.setPending(false);
+
+		InvitationDAO.save(invitation);
+
+		Course course2 = courseDAO.findById(handleSubscriptionDTO.getCourseId()).get();
 		System.out.println("numero degli studenti che seguono il corso " + course2.getStudents().size());
 		return "success";
 	}
 
+	public String deleteSubscription(HandleSubscriptionDTO handleSubscriptionDTO) {
+		System.out.println(handleSubscriptionDTO.getStudent() + " " + handleSubscriptionDTO.getCourseId());
+
+		String key = handleSubscriptionDTO.getStudent() + handleSubscriptionDTO.getCourseId();
+		InvitationDAO.deleteById(key);
+
+		return "success";
+	}
 }

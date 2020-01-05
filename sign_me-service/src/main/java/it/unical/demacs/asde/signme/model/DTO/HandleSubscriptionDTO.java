@@ -1,6 +1,6 @@
 package it.unical.demacs.asde.signme.model.DTO;
 
-public class ConfirmSubscriptionDTO {
+public class HandleSubscriptionDTO {
 
 	private String student;
 

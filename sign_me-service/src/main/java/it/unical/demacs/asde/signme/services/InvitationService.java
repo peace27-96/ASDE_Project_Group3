@@ -31,7 +31,7 @@ public class InvitationService {
 		Invitation invitation = new Invitation();
 		invitation.setStudent(student);
 		invitation.setCourse(course.getCourseId());
-		
+		invitation.setPending(true);
 		String key = student.getEmail() + course.getCourseId();
 		invitation.setInvitationId(key);
 		try {

@@ -17,7 +17,7 @@ import it.unical.demacs.asde.signme.model.Course;
 import it.unical.demacs.asde.signme.model.Invitation;
 import it.unical.demacs.asde.signme.model.Lecture;
 import it.unical.demacs.asde.signme.model.User;
-import it.unical.demacs.asde.signme.model.DTO.ConfirmSubscriptionDTO;
+import it.unical.demacs.asde.signme.model.DTO.HandleSubscriptionDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseCreationDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseDTO;
 import it.unical.demacs.asde.signme.model.DTO.InvitationDTO;
@@ -121,8 +121,13 @@ public class SignMeController {
 	}
 
 	@PostMapping("/confirmSubscription")
-	public String confirmSubscription(@RequestBody ConfirmSubscriptionDTO confirmSubscriptionDTO) {
-		return courseService.confirmSubscription(confirmSubscriptionDTO);
+	public String confirmSubscription(@RequestBody HandleSubscriptionDTO handleSubscriptionDTO) {
+		return courseService.confirmSubscription(handleSubscriptionDTO);
+	}
+
+	@PostMapping("/deleteSubscription")
+	public String deleteSubscription(@RequestBody HandleSubscriptionDTO handleSubscriptionDTO) {
+		return courseService.deleteSubscription(handleSubscriptionDTO);
 	}
 
 }

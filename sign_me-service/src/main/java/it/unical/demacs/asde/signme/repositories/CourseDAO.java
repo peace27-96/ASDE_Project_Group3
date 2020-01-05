@@ -7,13 +7,14 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import it.unical.demacs.asde.signme.model.Course;
+import it.unical.demacs.asde.signme.model.User;
 
 @Repository
 public interface CourseDAO extends CrudRepository<Course, Integer> {
 
 	Set<Course> findCoursesByLecturerEmail(String email);
 
-	@Query("FROM Course c WHERE c.lecturer!=:email")
-	Set<Course> findCoursesAvailable(String email);
+	@Query("FROM Course c WHERE c.lecturer!=:user")
+	Set<Course> findCoursesAvailable(User user);
 	
 }

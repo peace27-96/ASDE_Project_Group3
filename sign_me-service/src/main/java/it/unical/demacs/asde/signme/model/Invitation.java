@@ -14,7 +14,6 @@ public class Invitation {
 	private Integer course;
 	@ManyToOne
 	private User student;
-
 	private Boolean pending;
 
 	public Invitation() {
