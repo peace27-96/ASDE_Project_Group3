@@ -122,12 +122,17 @@ public class SignMeController {
 
 	@PostMapping("/confirmSubscription")
 	public String confirmSubscription(@RequestBody HandleSubscriptionDTO handleSubscriptionDTO) {
-		return courseService.confirmSubscription(handleSubscriptionDTO);
+		return invitationService.confirmSubscription(handleSubscriptionDTO);
 	}
 
 	@PostMapping("/deleteSubscription")
 	public String deleteSubscription(@RequestBody HandleSubscriptionDTO handleSubscriptionDTO) {
-		return courseService.deleteSubscription(handleSubscriptionDTO);
+		return invitationService.deleteSubscription(handleSubscriptionDTO);
+	}
+
+	@PostMapping("/deleteCourse")
+	public String deleteCourse(@RequestBody HandleSubscriptionDTO handleSubscriptionDTO) {
+		return courseService.deleteCourse(handleSubscriptionDTO);
 	}
 
 }

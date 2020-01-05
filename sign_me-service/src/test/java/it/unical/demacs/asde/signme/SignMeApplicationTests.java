@@ -15,7 +15,6 @@ import it.unical.demacs.asde.signme.model.User;
 import it.unical.demacs.asde.signme.repositories.CourseDAO;
 import it.unical.demacs.asde.signme.repositories.LectureDAO;
 import it.unical.demacs.asde.signme.repositories.UserDAO;
-import it.unical.demacs.asde.signme.services.FaceRecognitionService;
 
 @SpringBootTest
 class SignMeApplicationTests {
@@ -32,7 +31,7 @@ class SignMeApplicationTests {
 	@Test
 	public void attendacesWorks() {
 
-		FaceRecognitionService uploadImageService = new FaceRecognitionService();
+		// FaceRecognitionService uploadImageService = new FaceRecognitionService();
 
 		User cris = new User();
 		User kiello = new User();
