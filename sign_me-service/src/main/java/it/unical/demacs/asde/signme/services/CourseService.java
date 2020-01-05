@@ -123,7 +123,6 @@ public class CourseService {
 	}
 
 	public String deleteSubscription(HandleSubscriptionDTO handleSubscriptionDTO) {
-		System.out.println(handleSubscriptionDTO.getStudent() + " " + handleSubscriptionDTO.getCourseId());
 
 		String key = handleSubscriptionDTO.getStudent() + handleSubscriptionDTO.getCourseId();
 		InvitationDAO.deleteById(key);

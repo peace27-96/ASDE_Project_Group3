@@ -10,6 +10,8 @@ import it.unical.demacs.asde.signme.model.Invitation;
 
 @Repository
 public interface InvitationDAO extends CrudRepository<Invitation, String> {
-	@Query("FROM Invitation i WHERE i.course=:courseId AND i.pending=:true")
+	
+	@Query("FROM Invitation i WHERE i.course=:courseId AND i.pending is true")
 	Set<Invitation> findInvitationsByCourse(Integer courseId);
+	
 }

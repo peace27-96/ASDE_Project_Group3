@@ -40,7 +40,7 @@ public class User {
 	@JsonIgnore
 	private Set<Lecture> attendedLectures;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "student", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "student", fetch = FetchType.EAGER)
 	@JsonIgnore
 	private List<Invitation> userInvitations;
 
