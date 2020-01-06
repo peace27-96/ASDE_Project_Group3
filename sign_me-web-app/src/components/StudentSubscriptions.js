@@ -8,7 +8,6 @@ import Card from '@material-ui/core/Card';
 import BaseInstance from '../http-client/BaseInstance';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearOutlinedIcon from '@material-ui/icons/ClearOutlined';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 
 
 export default class StudentSubscriptions extends React.Component {

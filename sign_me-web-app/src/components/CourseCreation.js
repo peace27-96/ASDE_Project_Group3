@@ -30,8 +30,7 @@ export default function FormDialog(props) {
 
   const createCourse = () => {
     console.log(description)
-    BaseInstance.post("createCourse", { email: props.getUser(), subject: description }).then(res => { 
-      alert(res.data) 
+    BaseInstance.post("createCourse", { email: props.getUser(), subject: description }).then(res => {
       props.addCourse(res.data, description)
     })
     handleClose()

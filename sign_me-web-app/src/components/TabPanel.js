@@ -6,7 +6,8 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import CoursesList from './CoursesList.js'
+import CreatedCoursesList from './CreatedCoursesList.js'
+import SubscribedCoursesList from './SubscribedCoursesList.js'
 import {useStyles} from './TabsStyle.js';
 
 function TabPanel(props) {
@@ -56,10 +57,10 @@ export default function SimpleTabs(props) {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        Item Two
+        <SubscribedCoursesList getSubscribedCourses={props.getSubscribedCourses} goToCoursePage={props.goToCoursePage}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <CoursesList getCourses={props.getCourses} goToCoursePage={props.goToCoursePage}/>
+        <CreatedCoursesList getCourses={props.getCourses} goToCoursePage={props.goToCoursePage}/>
       </TabPanel>
     </div>
   );

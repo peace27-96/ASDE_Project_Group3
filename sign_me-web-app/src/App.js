@@ -21,6 +21,7 @@ export default class App extends React.Component {
       credentials: {},
       picturePath: "",
       createdCourses: [],
+      subscribedCourses: [],
       allCourses: [],
       currentCourse: null,
       homeRender: false,
@@ -29,11 +30,14 @@ export default class App extends React.Component {
   }
 
   logUser = (data) => {
+    var list = data.followingCourses;
+    list.sort((a, b) => (a.subject > b.subject) ? 1 : -1)
     this.setState({
       logged: true,
-      credentials: {"email": data.email, "firstName":data.firstName, "lastName":data.lastName},
+      credentials: { "email": data.email, "firstName": data.firstName, "lastName": data.lastName },
       picturePath: data.profilePicture,
       createdCourses: data.createdCourses,
+      subscribedCourses: list,
       homeRender: true
     })
     this.requestAllCourses()
@@ -69,12 +73,62 @@ export default class App extends React.Component {
   }
 
   goToCoursePage = (course) => {
-    console.log("goto")
+    console.log("go to")
     console.log(course)
     this.setState({
       homeRender: false,
       courseRender: true,
       currentCourse: course
+    })
+  }
+
+  requestAllCourses = () => {
+    BaseInstance.post("/getAllCoursesAvailable", {
+      email: this.state.credentials.email
+    }).then((res) => {
+      var list = res.data
+      list.sort((a, b) => (a.subject > b.subject) ? 1 : -1)
+      this.setState({
+        allCourses: list
+      })
+    })
+
+  }
+
+  refresh = () => {
+    if (this.state.logged) {
+      this.requestAllCourses()
+      this.requestSubscribedCourses()
+    }
+  }
+
+  componentDidMount() {
+    this.timer = setInterval(() => this.refresh(), 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer)
+    this.timer = null;
+  }
+
+  getAllCourses = () => {
+    console.log(this.state.allCourses)
+    return this.state.allCourses
+  }
+
+  getSubscribedCourses = () => {
+    return this.state.subscribedCourses;
+  }
+
+  requestSubscribedCourses = () => {
+    BaseInstance.post("getStudentCourses", {
+      email: this.getUser()
+    }).then((res) => {
+      var list = res.data
+      list.sort((a, b) => (a.subject > b.subject) ? 1 : -1)
+      this.setState({
+        subscribedCourses: list
+      })
     })
   }
 
@@ -90,21 +144,6 @@ export default class App extends React.Component {
     }
   }
 
-  requestAllCourses = () => {
-    BaseInstance.post("/getAllCoursesAvailable", {
-      email: this.state.credentials.email      
-    }).then((res) => {
-      this.setState({
-        allCourses: res.data
-      })
-    })
-  }
-
-  getAllCourses = () => {
-    console.log(this.state.allCourses)
-    return this.state.allCourses
-  }
-
   render() {
     return (
       <Router >
@@ -115,18 +154,20 @@ export default class App extends React.Component {
 
           <Switch>
             <Route path="/home">
-              <AppBar getAllCourses={this.getAllCourses} getUser={this.getUser}/>
-              <Home getUser={this.getUser} getPicture={this.getPicture} 
-                    getCourses={this.getCourses} addCourse={this.addCourse} 
-                    goToCoursePage={this.goToCoursePage} getCredentials={this.getCredentials}
+              <AppBar getAllCourses={this.getAllCourses} getUser={this.getUser} />
+              <Home getUser={this.getUser} getPicture={this.getPicture}
+                getCourses={this.getCourses} addCourse={this.addCourse}
+                goToCoursePage={this.goToCoursePage} getCredentials={this.getCredentials}
+                getSubscribedCourses={this.getSubscribedCourses}
               />
             </Route>
             <Route exact path="/">
               <Index logUser={this.logUser} />
             </Route>
             <Route path="/course_page">
-              <AppBar getAllCourses={this.getAllCourses} getUser={this.getUser}/>
-              <CoursePage getAllCourses={this.getAllCourses} getCurrentCourse={this.getCurrentCourse}/>
+              <AppBar getAllCourses={this.getAllCourses} getUser={this.getUser} />
+              <CoursePage getAllCourses={this.getAllCourses}
+                getCurrentCourse={this.getCurrentCourse} />
             </Route>
           </Switch>
         </div>

@@ -79,16 +79,27 @@ export default function RecipeReviewCard(props) {
                         </CardContent>
                     </Card>
                     <Card className={classes.summaryCard}>
-                        <Typography className={classes.summaryField}>Name: {props.getCredentials().firstName}</Typography>
-                        <Typography className={classes.summaryField}>Surname: {props.getCredentials().lastName}</Typography>
-                        <Typography className={classes.summaryField}>Email: {props.getCredentials().email}</Typography>
+                    <div style={{display:"flex","justify-content": "space-between"}}>
+                        <Typography className={classes.summaryField}>Name: </Typography> 
+                        <Typography className={classes.summaryField}>{props.getCredentials().firstName}</Typography> 
+                    </div>
+                    <Divider></Divider>
+                    <div style={{display:"flex","justify-content": "space-between"}}>
+                        <Typography className={classes.summaryField}>Surname: </Typography> 
+                        <Typography className={classes.summaryField}>{props.getCredentials().lastName}</Typography> 
+                    </div>
+                    <Divider></Divider>
+                    <div style={{display:"flex","justify-content": "space-between"}}>
+                        <Typography className={classes.summaryField}>Email: </Typography> 
+                        <Typography className={classes.summaryField}>{props.getCredentials().email}</Typography> 
+                    </div>
                     </Card>
                     <CourseCreation getUser={props.getUser} addCourse={props.addCourse} />
                 </Grid>
 
                 <Grid item xs={9} style={{ paddingLeft: "20px" }}>
                     <Card className={classes.coursesCard}>
-                        <TabPanel getCourses={props.getCourses} goToCoursePage={props.goToCoursePage} />
+                        <TabPanel getCourses={props.getCourses} getSubscribedCourses={props.getSubscribedCourses} goToCoursePage={props.goToCoursePage} />
                     </Card>
                 </Grid>
             </Grid>
