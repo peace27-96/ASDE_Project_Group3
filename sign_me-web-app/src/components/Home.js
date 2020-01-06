@@ -52,6 +52,7 @@ export default function RecipeReviewCard({history}) {
                 }
                 alert("File uploaded successfully.")
                 imagePath = 'http://localhost:8080/signme/' + res.data
+                Cookies.set("profilePicture", imagePath)
             })
     };
 
