@@ -24,7 +24,7 @@ public class FaceRecognitionService {
 	// key1 8ac7a514e86048a087f9fca5180a0981
 	// key2 833a3a83f8f140aa8c7ffba6ae59e143
 
-	private static final String subscriptionKey = "8ac7a514e86048a087f9fca5180a0981";
+	private static final String subscriptionKey = "03b1cdb4d8604750956d911f9c1f7af7";
 	private static final String uriBaseDetect = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect";
 	private static final String uriBaseVerify = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/verify";
 
@@ -58,8 +58,7 @@ public class FaceRecognitionService {
 			String foundStudentKey = "";
 			for (String id : pictureFaceIDs) {
 				if (compare(getJSONForCompare(students.get(key), id))) {
-					System.out.println(key);
-					foundStudentKey = id;
+					foundStudentKey = key;
 					break;
 				}
 			}

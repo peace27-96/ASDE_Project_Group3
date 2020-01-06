@@ -1,6 +1,5 @@
 package it.unical.demacs.asde.signme.controllers;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +112,7 @@ public class SignMeController {
 	}
 
 	@PostMapping("/uploadAttendacesPicture")
-	public ArrayList<String> uploadAttendacesPicture(@RequestBody MultipartFile file) {
+	public Set<User> uploadAttendacesPicture(@RequestBody MultipartFile file) {
 		return uploadImageService.uploadAttendacesPicture(file);
 	}
 
