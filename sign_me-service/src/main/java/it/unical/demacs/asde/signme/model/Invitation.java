@@ -12,9 +12,9 @@ public class Invitation {
 	@Id
 	private String invitationId;
 	private Integer course;
+	private Boolean pending;
 	@ManyToOne
 	private User student;
-	private Boolean pending;
 
 	public Invitation() {
 		super();

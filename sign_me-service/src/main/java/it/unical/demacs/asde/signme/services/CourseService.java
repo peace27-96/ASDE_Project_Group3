@@ -1,20 +1,20 @@
 package it.unical.demacs.asde.signme.services;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.unical.demacs.asde.signme.model.Course;
+import it.unical.demacs.asde.signme.model.Invitation;
 import it.unical.demacs.asde.signme.model.Lecture;
 import it.unical.demacs.asde.signme.model.User;
 import it.unical.demacs.asde.signme.model.DTO.CourseCreationDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseDTO;
-import it.unical.demacs.asde.signme.model.DTO.HandleSubscriptionDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDTO;
 import it.unical.demacs.asde.signme.repositories.CourseDAO;
+import it.unical.demacs.asde.signme.repositories.InvitationDAO;
 import it.unical.demacs.asde.signme.repositories.LectureDAO;
 import it.unical.demacs.asde.signme.repositories.UserDAO;
 
@@ -30,16 +30,19 @@ public class CourseService {
 	@Autowired
 	private LectureDAO lectureDAO;
 
-	public List<Course> getStudentCourses(String email) {
+	@Autowired
+	private InvitationDAO invitationDAO;
+
+	public Set<Course> getStudentCourses(String email) {
 
 		User user = userDAO.findById(email).get();
 
-		return new ArrayList<>(user.getFollowingCourses());
+		return new HashSet<>(user.getFollowingCourses());
 	}
 
-	public List<Course> getLecturerCourses(String email) {
+	public Set<Course> getLecturerCourses(String email) {
 
-		return new ArrayList<>(courseDAO.findCoursesByLecturerEmail(email));
+		return new HashSet<>(courseDAO.findCoursesByLecturerEmail(email));
 
 	}
 
@@ -71,10 +74,10 @@ public class CourseService {
 		return "success";
 	}
 
-	public List<Course> getAllCourses() {
+	public Set<Course> getAllCourses() {
 
 		Iterable<Course> allCourses = courseDAO.findAll();
-		List<Course> courses = new ArrayList<>();
+		Set<Course> courses = new HashSet<Course>();
 		for (Course course : allCourses)
 			courses.add(course);
 		return courses;
@@ -82,7 +85,6 @@ public class CourseService {
 	}
 
 	public Set<Lecture> getCourseLectures(CourseDTO courseDTO) {
-
 		return courseDAO.findById(courseDTO.getCourseId()).get().getLectures();
 
 	}
@@ -92,8 +94,37 @@ public class CourseService {
 		return courseDAO.findCoursesAvailable(user);
 	}
 
-	public String deleteCourse(HandleSubscriptionDTO handleSubscriptionDTO) {
-		// TODO Auto-generated method stub
-		return null;
+	public String deleteCourse(CourseDTO courseDTO) {
+		// delete foreign key from users
+		Course course = null;
+		Set<User> users = userDAO.findUsersByFollowingCoursesCourseId(courseDTO.getCourseId());
+		for (User user : users) {
+			System.out.println("utente iscritto " + user.getEmail());
+			Set<Course> courses = user.getFollowingCourses();
+			for (Course c : courses) {
+				System.out.println("tutti i corsi ai quali l'utente " + user.getEmail()
+						+ " è iscritto prima dell'eliminazione " + c.getCourseId());
+				if (c.getCourseId() == courseDTO.getCourseId()) {
+					course = c;
+				}
+			}
+			if (course != null) {
+				courses.remove(course);
+				for (Course c : courses) {
+					System.out.println("tutti i corsi ai quali l'utente " + user.getEmail()
+							+ " è iscritto dopo l'eliminazione " + c.getCourseId());
+				}
+				user.setFollowingCourses(courses);
+				userDAO.save(user);
+			}
+		}
+		// delete foreign key from invitation
+		Set<Invitation> invitations = invitationDAO.findInvitationsByCourse(courseDTO.getCourseId());
+		for (Invitation invitation : invitations) {
+			invitationDAO.delete(invitation);
+		}
+		// delete course
+		courseDAO.deleteById(courseDTO.getCourseId());
+		return "success";
 	}
 }

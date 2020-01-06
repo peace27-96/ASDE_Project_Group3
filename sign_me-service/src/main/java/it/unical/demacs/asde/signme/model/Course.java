@@ -2,7 +2,6 @@ package it.unical.demacs.asde.signme.model;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -25,16 +24,16 @@ public class Course {
 
 	private String subject;
 
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "followingCourses")
+	@JsonIgnore
+	private Set<User> students;
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "course")
+	private Set<Lecture> lectures;
+
 	@ManyToOne
 	@JsonIgnore
 	private User lecturer;
-
-	@ManyToMany(mappedBy = "followingCourses", fetch = FetchType.EAGER)
-	@JsonIgnore
-	Set<User> students;
-
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch = FetchType.EAGER)
-	private Set<Lecture> lectures;
 
 	public Course() {
 		super();

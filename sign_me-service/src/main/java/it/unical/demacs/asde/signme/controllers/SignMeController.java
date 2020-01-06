@@ -1,7 +1,6 @@
 package it.unical.demacs.asde.signme.controllers;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +16,9 @@ import it.unical.demacs.asde.signme.model.Course;
 import it.unical.demacs.asde.signme.model.Invitation;
 import it.unical.demacs.asde.signme.model.Lecture;
 import it.unical.demacs.asde.signme.model.User;
-import it.unical.demacs.asde.signme.model.DTO.HandleSubscriptionDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseCreationDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseDTO;
+import it.unical.demacs.asde.signme.model.DTO.HandleSubscriptionDTO;
 import it.unical.demacs.asde.signme.model.DTO.InvitationDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDTO;
 import it.unical.demacs.asde.signme.model.DTO.UserDTO;
@@ -60,18 +59,18 @@ public class SignMeController {
 	}
 
 	@GetMapping("/getAllCourses")
-	public List<Course> getAllCourses() {
+	public Set<Course> getAllCourses() {
 		System.out.println("getAllCourses");
 		return courseService.getAllCourses();
 	}
 
-	@GetMapping("/getStudentCourses")
-	public List<Course> getStudentCourses(@RequestParam String email) {
-		return courseService.getStudentCourses(email);
+	@PostMapping("/getStudentCourses")
+	public Set<Course> getStudentCourses(@RequestBody UserDTO userDTO) {
+		return courseService.getStudentCourses(userDTO.getEmail());
 	}
 
 	@GetMapping("/getLecturerCourses")
-	public List<Course> getLecturerCourses(@RequestParam String email) {
+	public Set<Course> getLecturerCourses(@RequestParam String email) {
 		return courseService.getLecturerCourses(email);
 	}
 
@@ -105,8 +104,6 @@ public class SignMeController {
 
 	@PostMapping("/getSubscriptionRequests")
 	public Set<Invitation> getInvitations(@RequestBody CourseDTO courseDTO) {
-		System.out.println(courseDTO);
-		System.out.println("getSubscription");
 		return invitationService.getInvitation(courseDTO.getCourseId());
 	}
 
@@ -131,8 +128,8 @@ public class SignMeController {
 	}
 
 	@PostMapping("/deleteCourse")
-	public String deleteCourse(@RequestBody HandleSubscriptionDTO handleSubscriptionDTO) {
-		return courseService.deleteCourse(handleSubscriptionDTO);
+	public String deleteCourse(@RequestBody CourseDTO courseDTO) {
+		return courseService.deleteCourse(courseDTO);
 	}
 
 }

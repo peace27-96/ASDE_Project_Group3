@@ -3,7 +3,9 @@ package it.unical.demacs.asde.signme.model;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "Lecture")
@@ -24,10 +28,13 @@ public class Lecture {
 	@Temporal(TemporalType.DATE)
 	private Date date;
 
-	@ManyToMany(mappedBy = "attendedLectures")
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST,
+			CascadeType.MERGE }, mappedBy = "attendedLectures")
+	@JsonIgnore
 	private Set<User> students;
 
 	@ManyToOne
+	@JsonIgnore
 	private Course course;
 
 	public Lecture() {

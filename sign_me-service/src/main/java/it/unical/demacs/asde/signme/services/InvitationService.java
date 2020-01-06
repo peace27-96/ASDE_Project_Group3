@@ -47,7 +47,7 @@ public class InvitationService {
 	}
 
 	public Set<Invitation> getInvitation(Integer courseID) {
-		return InvitationDAO.findInvitationsByCourse(courseID);
+		return InvitationDAO.findAvailableInvitationsByCourse(courseID);
 	}
 
 	public String confirmSubscription(HandleSubscriptionDTO handleSubscriptionDTO) {
@@ -58,12 +58,10 @@ public class InvitationService {
 		followingCourse.add(course);
 		user.setFollowingCourses(followingCourse);
 		userDAO.save(user);
-
-		Set<User> students = course.getStudents();
-		students.add(user);
-		course.setStudents(students);
-		courseDAO.save(course);
-
+		/*
+		 * Set<User> students = course.getStudents(); students.add(user);
+		 * course.setStudents(students); courseDAO.save(course);
+		 */
 		String key = user.getEmail() + course.getCourseId();
 		Invitation invitation = InvitationDAO.findById(key).get();
 		invitation.setPending(false);

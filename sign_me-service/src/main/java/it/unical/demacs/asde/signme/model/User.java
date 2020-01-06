@@ -26,21 +26,20 @@ public class User {
 	private String lastName;
 	private String profilePicture;
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "lecturer", fetch = FetchType.EAGER)
-	private Set<Course> createdCourses;
-
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "Subscriptions", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "subscriptions", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
 			@JoinColumn(name = "courseId") })
 	private Set<Course> followingCourses;
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "Attendances", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "attendances", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
 			@JoinColumn(name = "lectureId") })
-	@JsonIgnore
 	private Set<Lecture> attendedLectures;
 
-	@OneToMany(mappedBy = "student", fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "lecturer")
+	private Set<Course> createdCourses;
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "student")
 	@JsonIgnore
 	private List<Invitation> userInvitations;
 
