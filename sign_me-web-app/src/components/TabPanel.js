@@ -40,7 +40,7 @@ function a11yProps(index) {
   };
 }
 
-export default function SimpleTabs(props) {
+export default function SimpleTabs() {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -57,10 +57,10 @@ export default function SimpleTabs(props) {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <SubscribedCoursesList getSubscribedCourses={props.getSubscribedCourses} goToCoursePage={props.goToCoursePage}/>
+        <SubscribedCoursesList/>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <CreatedCoursesList getCourses={props.getCourses} goToCoursePage={props.goToCoursePage}/>
+        <CreatedCoursesList/>
       </TabPanel>
     </div>
   );

@@ -8,12 +8,12 @@ import Card from '@material-ui/core/Card';
 import BaseInstance from '../http-client/BaseInstance';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearOutlinedIcon from '@material-ui/icons/ClearOutlined';
-
+import Cookies from 'js-cookie'
 
 export default class StudentSubscriptions extends React.Component {
 
-    constructor(props) {
-        super(props);
+    constructor() {
+        super();
         this.state = {
             subscriptions: [],
             loaded: false
@@ -24,7 +24,7 @@ export default class StudentSubscriptions extends React.Component {
     confirmSubscription = (studentId) => {
         BaseInstance.post("confirmSubscription", {
             student: studentId,
-            courseId: this.props.getCurrentCourse().courseId
+            courseId: JSON.parse(Cookies.get("currentCourse")).courseId
         }).then((res) => {
             console.log("confirm sub function");
             console.log(res);
@@ -34,7 +34,7 @@ export default class StudentSubscriptions extends React.Component {
     deleteSubscription = (studentId) => {
         BaseInstance.post("deleteSubscription", {
             student: studentId,
-            courseId: this.props.getCurrentCourse().courseId
+            courseId: JSON.parse(Cookies.get("currentCourse")).courseId
         }).then((res) => {
             console.log("delete sub function");
             console.log(res);
@@ -43,7 +43,7 @@ export default class StudentSubscriptions extends React.Component {
 
     getSubscriptions = () => { 
         BaseInstance.post("getSubscriptionRequests", {
-            courseId: this.props.getCurrentCourse().courseId
+            courseId: JSON.parse(Cookies.get("currentCourse")).courseId
         }).then((res) => {
             console.log("get subscription");
             console.log(res.data);

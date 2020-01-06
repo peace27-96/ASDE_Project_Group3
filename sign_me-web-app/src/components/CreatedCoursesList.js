@@ -9,11 +9,20 @@ import Divider from '@material-ui/core/Divider';
 import ClearOutlinedIcon from '@material-ui/icons/ClearOutlined';
 import BaseInstance from '../http-client/BaseInstance.js';
 import { IconButton } from '@material-ui/core';
-//import {BrowserHistory} from 'react-router-dom';
+import Cookies from 'js-cookie'
+import { createBrowserHistory } from 'history';
+import { Link } from 'react-router-dom'
 
 export default function CoursesList(props) {
     const classes = useStyles();
-    var courses = props.getCourses();
+
+    var courses = JSON.parse(Cookies.get("createdCourses"));
+
+    const history = createBrowserHistory();
+    const goToCourse = course => {
+        Cookies.set("currentCourse", course)
+        //history.push("/course")
+    }
 
     const deleteCourse = (id) => {
         BaseInstance.post("deleteCourse", {
@@ -34,8 +43,8 @@ export default function CoursesList(props) {
                 {courses.map((course) => (
                     <div key={course.courseId}>
                         <ListItem className={classes.courseItem} item xs={12}>
-                            <ListItem button onClick={() => { props.goToCoursePage(course) }}>
-                                <ListItemText className={classes.courseName} >{course.subject}</ListItemText>
+                            <ListItem button>
+                                <Link className={classes.courseName} to="/course" onClick={() => { goToCourse(course) }} style={{ color: "#000000", "text-decoration": "none" }}>{course.subject}</Link>
                             </ListItem>
                             <IconButton onClick={() => { deleteCourse(course.courseId) }}> <ClearOutlinedIcon /> </IconButton>
                         </ListItem>

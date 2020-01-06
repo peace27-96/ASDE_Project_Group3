@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import LectureItems from './LectureItems';
 import FolderList from './FolderList';
-import { Button } from '@material-ui/core';
 import LectureCreation from './LectureCreation'
 import StudentSubscriptions from './StudentSubscriptions'
+import Cookies from 'js-cookie'
+import { createBrowserHistory } from "history";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -20,11 +21,22 @@ const useStyles = makeStyles(theme => ({
 
 
 
-export default function FullWidthGrid(props) {
+export default function FullWidthGrid({history}) {
+    console.log("CoursePage")
+    console.log(history)
+    if(history === undefined) {
+        history = createBrowserHistory()
+        history.push("/login")
+    }
+
+    if(Cookies.get("email") === undefined || Cookies.get("currentCourse") === undefined)  
+        history.push("/login")
+
     const classes = useStyles();
+
     return (
         <div className={classes.root} >
-            <h1 style={{ paddingLeft: 15, display:"inline-block"}}>{props.getCurrentCourse().subject}</h1>
+            <h1 style={{ paddingLeft: 15, display:"inline-block"}}>{JSON.parse(Cookies.get("currentCourse")).subject}</h1>
             <LectureCreation />
             <Grid container justify="center" xs={12} direction="row">
                 <Grid item xs={9} style={{paddingRight:30}}>
@@ -33,7 +45,7 @@ export default function FullWidthGrid(props) {
                 <Grid container xs={3} direction="column" spacing={3}>
                     <FolderList type="Avviso"/>
                     <FolderList type="Materiale"/>
-                    <StudentSubscriptions getCurrentCourse={props.getCurrentCourse}/>
+                    <StudentSubscriptions/>
                 </Grid>
             </Grid>
         </div>

@@ -8,10 +8,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import {useStyles} from './LoginRegisterStyle'
+import Cookies from 'js-cookie'
 
   
 
-export default function FormDialog(props) {
+export default function FormDialog() {
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
   const [description, setSelectedDescription] = React.useState("")
@@ -28,10 +29,17 @@ export default function FormDialog(props) {
       setSelectedDescription(e.target.value)
   }
 
+  const addCourse = (id, name) => {
+    var courses = JSON.parse(Cookies.get("createdCourses"))
+    console.log(courses)
+    courses.push({ "courseId": id, "subject": name })
+    Cookies.set("createdCourses", courses)
+  }
+
   const createCourse = () => {
     console.log(description)
-    BaseInstance.post("createCourse", { email: props.getUser(), subject: description }).then(res => {
-      props.addCourse(res.data, description)
+    BaseInstance.post("createCourse", { email: Cookies.get("email"), subject: description }).then(res => {
+      addCourse(res.data, description)
     })
     handleClose()
   }

@@ -16,6 +16,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import BaseInstance from '../http-client/BaseInstance'
+import Cookies from 'js-cookie'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -64,7 +65,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-export default function SearchAppBar(props) {
+export default function SearchAppBar() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [subject, setSubject] = React.useState("");
@@ -81,10 +82,10 @@ export default function SearchAppBar(props) {
   };
 
   const registerToCourse = () => {
-    console.log("REGISTER: " + id_course + " --- " + props.getUser())
+    console.log("REGISTER: " + id_course + " --- " + Cookies.get("email"))
 
     BaseInstance.post("createSubscriptionRequest", { 
-      email: props.getUser(),
+      email: Cookies.get("email"),
       course: id_course})
       .then((res) => {
         console.log(res);
@@ -102,7 +103,7 @@ export default function SearchAppBar(props) {
           <Typography className={classes.title} variant="h6" noWrap>Sign Me</Typography>
           <div className={classes.search}>
             <Autocomplete
-              options={props.getAllCourses()}
+              options={JSON.parse(Cookies.get("allCourses"))}
               getOptionLabel={option => option.subject}
               style={{ width: 300 }}
               onChange={(event, newValue) => {
