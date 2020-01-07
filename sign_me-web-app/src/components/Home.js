@@ -25,7 +25,7 @@ export default function RecipeReviewCard({history}) {
 
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);
-    Cookies.remove("currentCourse")
+    // Cookies.remove("currentCourse")
 
     var imagePath = Cookies.get("profilePicture")
     if (imagePath === null) imagePath = '../resources/user-icon.png'

@@ -12,6 +12,7 @@ import Grid from '@material-ui/core/Grid';
 import {useStyles} from './LoginRegisterStyle'
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
+import Cookies from 'js-cookie'
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -19,10 +20,10 @@ import {
 
   
 
-export default function FormDialog(props) {
+export default function FormDialog() {
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
-  const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'))
+  const [selectedDate, setSelectedDate] = React.useState(new Date('2020-01-09T21:11:54'))
   const [description, setSelectedDescription] = React.useState("")
   
   const handleClickOpen = () => {
@@ -42,9 +43,15 @@ export default function FormDialog(props) {
   }
 
   const createLecture = () => {
-    console.log(description)
-    console.log(selectedDate.toDateString())
-    /* BaseInstance etc.. */
+   
+    var courseId = JSON.parse(Cookies.get("currentCourse")).courseId;
+
+    BaseInstance.post("createLecture", {course: courseId, description: description, date: selectedDate}).then(res =>{
+      var lectures = JSON.parse(Cookies.get("currentLectures"));
+      lectures.push(res.data);
+      Cookies.set("currentLectures", lectures);
+    })
+    
     handleClose()
   }
 

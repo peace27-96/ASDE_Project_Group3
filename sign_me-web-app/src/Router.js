@@ -1,5 +1,5 @@
 import React from "react";
-import { Router, Switch, Route } from "react-router";
+import { Router, Switch, Route, Redirect } from "react-router";
 import { Link } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import Cookies from 'js-cookie'
@@ -20,12 +20,15 @@ export default class Routes extends React.Component {
                     <Route path="/logout" component={LogoutHandler} />
                     <Route path="/home">
                         <AppBar />
-                        <Home history={history}/>
+                        <Home history={history} />
                     </Route>
                     <Route path="/course">
                         <AppBar />
-                        <CoursePage history={history}/>
+                        <CoursePage history={history} />
                     </Route>
+                    <Route exact path="/" render={() => (
+                        <Redirect to="/login" />
+                    )} />
                 </Switch>
             </Router>
         );
@@ -36,16 +39,16 @@ export default class Routes extends React.Component {
             this.requestSubscribedCourses()
         }
     }
-    
+
     componentDidMount = () => {
         this.timer = setInterval(() => this.refresh(), 1000);
     }
-    
+
     componentWillUnmount = () => {
         clearInterval(this.timer)
         this.timer = null;
     }
-    
+
     requestAllCourses = () => {
         BaseInstance.post("/getAllCoursesAvailable", {
             email: Cookies.get("email")
@@ -54,9 +57,9 @@ export default class Routes extends React.Component {
             list.sort((a, b) => (a.subject > b.subject) ? 1 : -1)
             Cookies.set("allCourses", list)
         })
-    
+
     }
-    
+
     requestSubscribedCourses = () => {
         BaseInstance.post("/getStudentCourses", {
             email: Cookies.get("email")

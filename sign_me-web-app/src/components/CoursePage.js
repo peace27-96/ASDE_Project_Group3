@@ -7,6 +7,7 @@ import LectureCreation from './LectureCreation'
 import StudentSubscriptions from './StudentSubscriptions'
 import Cookies from 'js-cookie'
 import { createBrowserHistory } from "history";
+import BaseInstance from '../http-client/BaseInstance.js';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -29,6 +30,7 @@ export default function FullWidthGrid({history}) {
         history.push("/login")
     }
 
+
     if(Cookies.get("email") === undefined || Cookies.get("currentCourse") === undefined)  
         history.push("/login")
 
@@ -40,7 +42,7 @@ export default function FullWidthGrid({history}) {
             <LectureCreation />
             <Grid container justify="center" xs={12} direction="row">
                 <Grid item xs={9} style={{paddingRight:30}}>
-                    <LectureItems/>
+                    <LectureItems/>                  
                 </Grid>
                 <Grid container xs={3} direction="column" spacing={3}>
                     <FolderList type="Avviso"/>

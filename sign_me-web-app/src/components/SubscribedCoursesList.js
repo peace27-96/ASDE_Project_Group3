@@ -9,15 +9,25 @@ import Divider from '@material-ui/core/Divider';
 import { createBrowserHistory } from 'history';
 import Cookies from 'js-cookie'
 import {Link} from 'react-router-dom'
+import BaseInstance from '../http-client/BaseInstance';
 
 export default function CoursesList() {
     const classes = useStyles();
     var courses = JSON.parse(Cookies.get("subscribedCourses"));
-
+    const [count, setCount] = React.useState(0)
     const history = createBrowserHistory()
     const goToCourse = course => {
         Cookies.set("currentCourse", course)
         //history.push("/course")
+    }
+
+
+    const getAttendancesNumber = (courseId) => {
+        BaseInstance.get("getAttendancesNumber", {params:{email:Cookies.get("email"), courseId:courseId}}).then ( res => {
+            console.log(res.data)
+            setCount(res.data)
+        }) 
+        return count
     }
 
     return (
@@ -34,7 +44,7 @@ export default function CoursesList() {
                             <ListItem button >
                                <Link className={classes.courseName} to="/course" onClick={() => { goToCourse(course) }} style={{color:"#000000","text-decoration": "none"}}>{course.subject}</Link>
                             </ListItem>
-                            <Typography className={classes.courseAttendace}>{course.lectures.length}</Typography>
+                            <Typography className={classes.courseAttendace}>{getAttendancesNumber(course.courseId)}</Typography>
                         </ListItem>
                         <Divider></Divider>
                     </div>

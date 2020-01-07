@@ -26,8 +26,7 @@ export default class StudentSubscriptions extends React.Component {
             student: studentId,
             courseId: JSON.parse(Cookies.get("currentCourse")).courseId
         }).then((res) => {
-            console.log("confirm sub function");
-            console.log(res);
+           
         })
     }
 
@@ -36,8 +35,7 @@ export default class StudentSubscriptions extends React.Component {
             student: studentId,
             courseId: JSON.parse(Cookies.get("currentCourse")).courseId
         }).then((res) => {
-            console.log("delete sub function");
-            console.log(res);
+           
         })
     }
 
@@ -45,8 +43,6 @@ export default class StudentSubscriptions extends React.Component {
         BaseInstance.post("getSubscriptionRequests", {
             courseId: JSON.parse(Cookies.get("currentCourse")).courseId
         }).then((res) => {
-            console.log("get subscription");
-            console.log(res.data);
             var students=[];
             for(var i = 0; i < res.data.length; i++) {
                 var student = { "firstName": res.data[i].student.firstName, 

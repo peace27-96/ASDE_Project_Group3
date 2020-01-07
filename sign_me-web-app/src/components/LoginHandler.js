@@ -70,7 +70,7 @@ export default function LoginHandler ({history}) {
             console.log("login")
             console.log(res)
             if(res.data.email !== undefined){
-                setInitialSession(res.data);
+                await setInitialSession(res.data);
                 history.push("/home");
             } else {
                 console.log("gestire credenziali login")

@@ -19,9 +19,23 @@ export default function CoursesList(props) {
     var courses = JSON.parse(Cookies.get("createdCourses"));
 
     const history = createBrowserHistory();
+    Cookies.set("currentLectures", [])
+    Cookies.set("currentStudents", [])
+
+
     const goToCourse = course => {
         Cookies.set("currentCourse", course)
-        //history.push("/course")
+
+        var courseId = course.courseId
+        BaseInstance.get("getCourseLectures", {params: {courseId: courseId}}).then(res => {
+            var lectures = res.data; 
+            BaseInstance.get("getCourseStudents", {params: {courseId: courseId}}).then(res => {
+                Cookies.set("currentLectures", lectures)
+                var students = res.data;
+                Cookies.set("currentStudents", students)
+            })
+        })
+
     }
 
     const deleteCourse = (id) => {
