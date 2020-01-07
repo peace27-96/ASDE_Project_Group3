@@ -3,7 +3,6 @@ package it.unical.demacs.asde.signme.model;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -31,9 +30,10 @@ public class User {
 			@JoinColumn(name = "courseId") })
 	private Set<Course> followingCourses;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "attendances", joinColumns = { @JoinColumn(name = "email") }, inverseJoinColumns = {
 			@JoinColumn(name = "lectureId") })
+	@JsonIgnore
 	private Set<Lecture> attendedLectures;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "lecturer")
@@ -124,5 +124,26 @@ public class User {
 		return this.email + " " + this.password + " " + this.firstName + " " + this.lastName + " " + this.profilePicture
 				+ " " + this.createdCourses.size() + " " + this.followingCourses.size() + " "
 				+ this.attendedLectures.size();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+
+		if (o == this)
+			return true;
+		if (!(o instanceof User)) {
+			return false;
+		}
+
+		User user = (User) o;
+
+		return user.email.equals(email);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + email.hashCode();
+		return result;
 	}
 }

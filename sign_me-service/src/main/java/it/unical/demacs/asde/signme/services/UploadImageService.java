@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import it.unical.demacs.asde.signme.model.Course;
+import it.unical.demacs.asde.signme.model.Lecture;
 import it.unical.demacs.asde.signme.model.User;
 import it.unical.demacs.asde.signme.repositories.CourseDAO;
+import it.unical.demacs.asde.signme.repositories.LectureDAO;
 import it.unical.demacs.asde.signme.repositories.UserDAO;
 
 @Service
@@ -29,6 +31,9 @@ public class UploadImageService {
 
 	@Autowired
 	private CourseDAO courseDAO;
+
+	@Autowired
+	private LectureDAO lectureDAO;
 
 	@Autowired
 	private FaceRecognitionService faceRecognitionService;
@@ -62,25 +67,36 @@ public class UploadImageService {
 	}
 
 	public Set<User> uploadAttendacesPicture(MultipartFile file) {
-		Set<User> studentsAttending = new HashSet<>();
+		Set<User> attendingStudents = new HashSet<>();
 		ArrayList<String> attendances = new ArrayList<String>();
 		try {
 			if (!isImage(file))
-				return studentsAttending;
+				return attendingStudents;
 			byte[] bytes = file.getBytes();
 			Path path = Paths.get(TMP + file.getOriginalFilename());
 			String classPicture = path.toString();
 			Files.write(path, bytes);
+			String[] splittedName = file.getOriginalFilename().split("@");
+			Integer courseId = Integer.parseInt(splittedName[0]);
+			Integer lectureId = Integer.parseInt(splittedName[1].split("\\.")[0]);
 
-			Integer courseId = Integer.parseInt(file.getOriginalFilename().split("\\.")[0]);
+			System.out.println("courseId " + courseId + " lectureId " + lectureId);
+
+			Lecture lecture = lectureDAO.findById(lectureId).get();
+
+			System.out.println(lecture.getLectureId());
+
 			Course course = courseDAO.findById(courseId).get();
+
 			ArrayList<String> studentPictures = new ArrayList<>();
+
 			for (User user : course.getStudents()) {
 				studentPictures.add(user.getProfilePicture());
 			}
 
 			System.out.println(courseId);
 
+			System.out.println("studenti iscritti al corso");
 			for (String string : studentPictures) {
 				System.out.println(string);
 			}
@@ -88,6 +104,8 @@ public class UploadImageService {
 			System.out.println(classPicture);
 
 			attendances = faceRecognitionService.getAttendances(classPicture, studentPictures);
+
+			System.out.println("studenti presenti");
 			for (String attendance : attendances) {
 				System.out.println(attendance);
 			}
@@ -95,15 +113,21 @@ public class UploadImageService {
 			for (User user : course.getStudents()) {
 				for (String attendance : attendances) {
 					if (user.getProfilePicture().equals(attendance)) {
-						studentsAttending.add(user);
+						Set<Lecture> lectures = user.getAttendedLectures();
+						lectures.add(lecture);
+						user.setAttendedLectures(lectures);
+						userDAO.save(user);									
+						attendingStudents.add(user);
 					}
 				}
 			}
+			
+			attendingStudents.addAll(lecture.getStudents());
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return studentsAttending;
+		return attendingStudents;
 	}
 
 	private boolean isImage(MultipartFile file) {

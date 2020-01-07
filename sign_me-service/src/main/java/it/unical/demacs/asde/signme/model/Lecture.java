@@ -3,7 +3,6 @@ package it.unical.demacs.asde.signme.model;
 import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -28,8 +27,7 @@ public class Lecture {
 	@Temporal(TemporalType.DATE)
 	private Date date;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST,
-			CascadeType.MERGE }, mappedBy = "attendedLectures")
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "attendedLectures")
 	@JsonIgnore
 	private Set<User> students;
 

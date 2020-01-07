@@ -13,5 +13,5 @@ public interface UserDAO extends CrudRepository<User, String> {
 	User findUserByFirstName(String firstName);
 
 	Set<User> findUsersByFollowingCoursesCourseId(Integer courseId);
-
+	
 }

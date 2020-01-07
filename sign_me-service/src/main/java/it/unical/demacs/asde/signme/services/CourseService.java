@@ -10,9 +10,12 @@ import it.unical.demacs.asde.signme.model.Course;
 import it.unical.demacs.asde.signme.model.Invitation;
 import it.unical.demacs.asde.signme.model.Lecture;
 import it.unical.demacs.asde.signme.model.User;
+import it.unical.demacs.asde.signme.model.DTO.AttendanceDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseCreationDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseDTO;
+import it.unical.demacs.asde.signme.model.DTO.HandleSubscriptionDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDTO;
+import it.unical.demacs.asde.signme.model.DTO.LectureDeletionDTO;
 import it.unical.demacs.asde.signme.repositories.CourseDAO;
 import it.unical.demacs.asde.signme.repositories.InvitationDAO;
 import it.unical.demacs.asde.signme.repositories.LectureDAO;
@@ -60,7 +63,7 @@ public class CourseService {
 
 	}
 
-	public String createLecture(LectureDTO lectureDTO) {
+	public Lecture createLecture(LectureDTO lectureDTO) {
 
 		Course course = courseDAO.findById(lectureDTO.getCourse()).get();
 
@@ -71,7 +74,11 @@ public class CourseService {
 
 		lectureDAO.save(lecture);
 
-		return "success";
+		int id = lecture.getLectureId();
+
+		lecture = lectureDAO.findById(id).get();
+
+		return lecture;
 	}
 
 	public Set<Course> getAllCourses() {
@@ -127,4 +134,86 @@ public class CourseService {
 		courseDAO.deleteById(courseDTO.getCourseId());
 		return "success";
 	}
+
+	public Set<User> getCourseStudents(String courseId) {
+		Integer id = Integer.parseInt(courseId);
+		Course course = courseDAO.findById(id).get();
+		return course.getStudents();
+
+	}
+
+	public String deleteLecture(LectureDeletionDTO deleteLectureDTO) {
+		lectureDAO.deleteById(deleteLectureDTO.getLectureId());
+		return "success";
+	}
+
+	public Set<Lecture> getCourseLectures(String courseId) {
+		Integer id = Integer.parseInt(courseId);
+		System.out.println("CourseID: " + courseId);
+		Set<Lecture> tmp = courseDAO.findById(id).get().getLectures();
+		System.out.println(tmp.size());
+		return tmp;
+
+	}
+
+	public Set<User> getLectureAttendances(String lectureId) {
+		Lecture lecture = lectureDAO.findById(Integer.parseInt(lectureId)).get();
+		return lecture.getStudents();
+	}
+
+	public String deleteAttendance(AttendanceDTO attendanceDTO) {
+		User user = userDAO.findById(attendanceDTO.getEmail()).get();
+		Set<Lecture> lectures = user.getAttendedLectures();
+		Lecture lectureToDelete = null;
+		for (Lecture lecture : lectures) {
+			if (lecture.getLectureId().equals(attendanceDTO.getLectureId())) {
+				lectureToDelete = lecture;
+			}
+		}
+		if (lectureToDelete != null) {
+			lectures.remove(lectureToDelete);
+		}
+
+		user.setAttendedLectures(lectures);
+		userDAO.save(user);
+
+		return "success";
+	}
+
+	public User addAttendance(AttendanceDTO attendanceDTO) {
+		User user = userDAO.findById(attendanceDTO.getEmail()).get();
+		Set<Lecture> lectures = user.getAttendedLectures();
+		Lecture lectureToAdd = lectureDAO.findById(attendanceDTO.getLectureId()).get();
+
+		lectures.add(lectureToAdd);
+
+		user.setAttendedLectures(lectures);
+
+		userDAO.save(user);
+
+		return user;
+	}
+
+	public String getAttendancesNumber(String email, String strCourseId) {
+		Integer courseId = Integer.parseInt(strCourseId);
+		Course course = courseDAO.findById(courseId).get();
+		User user = userDAO.findById(email).get();
+
+		Set<Lecture> courseLectures = course.getLectures();
+
+		Set<Lecture> userLectures = user.getAttendedLectures();
+
+		int tot = courseLectures.size();
+		int count = 0;
+
+		for (Lecture cl : courseLectures) {
+			for (Lecture ul : userLectures) {
+				if (cl.getLectureId() == ul.getLectureId())
+					count++;
+			}
+		}
+
+		return count + "/" + tot;
+	}
+
 }

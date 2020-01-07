@@ -15,8 +15,10 @@ import it.unical.demacs.asde.signme.model.Course;
 import it.unical.demacs.asde.signme.model.Invitation;
 import it.unical.demacs.asde.signme.model.Lecture;
 import it.unical.demacs.asde.signme.model.User;
+import it.unical.demacs.asde.signme.model.DTO.AttendanceDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseCreationDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseDTO;
+import it.unical.demacs.asde.signme.model.DTO.LectureDeletionDTO;
 import it.unical.demacs.asde.signme.model.DTO.HandleSubscriptionDTO;
 import it.unical.demacs.asde.signme.model.DTO.InvitationDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDTO;
@@ -68,14 +70,19 @@ public class SignMeController {
 		return courseService.getStudentCourses(userDTO.getEmail());
 	}
 
+	@GetMapping("/getCourseStudents")
+	public Set<User> getCourseStudents(@RequestParam String courseId) {
+		return courseService.getCourseStudents(courseId);
+	}
+
 	@GetMapping("/getLecturerCourses")
 	public Set<Course> getLecturerCourses(@RequestParam String email) {
 		return courseService.getLecturerCourses(email);
 	}
 
 	@GetMapping("/getCourseLectures")
-	public Set<Lecture> getCourseLectures(@RequestBody CourseDTO courseDTO) {
-		return courseService.getCourseLectures(courseDTO);
+	public Set<Lecture> getCourseLectures(@RequestParam String courseId) {
+		return courseService.getCourseLectures(courseId);
 	}
 
 	@PostMapping("/getAllCoursesAvailable")
@@ -89,15 +96,12 @@ public class SignMeController {
 	}
 
 	@PostMapping("/createLecture")
-	public String createLecture(@RequestBody LectureDTO lectureDTO) {
+	public Lecture createLecture(@RequestBody LectureDTO lectureDTO) {
 		return courseService.createLecture(lectureDTO);
 	}
 
 	@PostMapping("/createSubscriptionRequest")
 	public String createInvitation(@RequestBody InvitationDTO InvitationDTO) {
-		System.out.println(InvitationDTO);
-		System.out.println(InvitationDTO.getEmail());
-		System.out.println(InvitationDTO.getCourse());
 		return invitationService.createInvitation(InvitationDTO);
 	}
 
@@ -131,4 +135,28 @@ public class SignMeController {
 		return courseService.deleteCourse(courseDTO);
 	}
 
+	@PostMapping("/deleteLecture")
+	public String deleteLecture(@RequestBody LectureDeletionDTO deleteLectureDTO) {
+		return courseService.deleteLecture(deleteLectureDTO);
+	}
+	
+	@GetMapping("/getLectureAttendances")
+	public Set<User> getLectureAttendances(@RequestParam String lectureId) {
+		return courseService.getLectureAttendances(lectureId);
+	}
+	
+	@PostMapping("/deleteAttendance")
+	public String deleteAttendance(@RequestBody AttendanceDTO attendanceDTO) {
+		return courseService.deleteAttendance(attendanceDTO);
+	}
+
+	@PostMapping("/addAttendance")
+	public User addAttendance(@RequestBody AttendanceDTO attendanceDTO) {
+		return courseService.addAttendance(attendanceDTO);
+	}
+	
+	@GetMapping("/getAttendancesNumber")
+	public String getAttendancesNumber(@RequestParam String email, @RequestParam String courseId) {
+		return courseService.getAttendancesNumber(email, courseId);
+	}
 }
