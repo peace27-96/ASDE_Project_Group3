@@ -124,7 +124,7 @@ public class FaceRecognitionService {
 						System.out.println(obj.get("confidence"));
 					}
 				} else {
-					System.out.println("Too many requests");
+					System.out.println("Too many requests or student not found");
 				}
 			}
 		} catch (Exception e) {
@@ -144,8 +144,12 @@ public class FaceRecognitionService {
 
 	private String getStudentID(String jsonString) {
 		String result = "";
-		JSONArray jsonArray = new JSONArray(jsonString);
-		result = jsonArray.getJSONObject(0).getString("faceId");
+		try {
+			JSONArray jsonArray = new JSONArray(jsonString);
+			result = jsonArray.getJSONObject(0).getString("faceId");
+		} catch (org.json.JSONException e) {
+			result = "";
+		}
 		return result;
 	}
 

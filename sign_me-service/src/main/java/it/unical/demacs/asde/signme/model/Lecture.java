@@ -87,4 +87,25 @@ public class Lecture {
 		this.course = course;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+
+		if (o == this)
+			return true;
+		if (!(o instanceof Lecture)) {
+			return false;
+		}
+
+		Lecture lecture = (Lecture) o;
+
+		return lecture.lectureId.equals(lectureId);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 17;
+		result = 31 * result + lectureId.hashCode();
+		return result;
+	}
+
 }

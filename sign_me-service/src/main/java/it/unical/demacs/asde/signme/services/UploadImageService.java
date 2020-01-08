@@ -1,5 +1,6 @@
 package it.unical.demacs.asde.signme.services;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,6 +46,8 @@ public class UploadImageService {
 				return "Wrong extension";
 			byte[] bytes = file.getBytes();
 			Path path = Paths.get(FOLDER + fileName);
+			File currFile = new File(FOLDER + fileName);
+			currFile.delete();
 			Files.write(path, bytes);
 
 			System.out.println(fileName);
@@ -59,7 +62,7 @@ public class UploadImageService {
 			User user = userDAO.findById(email).get();
 			user.setProfilePicture(FOLDER + fileName);
 			userDAO.save(user);
-			return "profilePictures/" + fileName;
+			return "uploads/profilePictures/" + fileName;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return "Failed";
@@ -116,12 +119,12 @@ public class UploadImageService {
 						Set<Lecture> lectures = user.getAttendedLectures();
 						lectures.add(lecture);
 						user.setAttendedLectures(lectures);
-						userDAO.save(user);									
+						userDAO.save(user);
 						attendingStudents.add(user);
 					}
 				}
 			}
-			
+
 			attendingStudents.addAll(lecture.getStudents());
 
 		} catch (IOException e) {

@@ -116,18 +116,48 @@ public class CourseService {
 			}
 			if (course != null) {
 				courses.remove(course);
+				Set<Lecture> userLectures = user.getAttendedLectures();
+				Set<Lecture> lectures = course.getLectures();
+				Set<Lecture> lecturesToDelete = new HashSet<>();
+				for (Lecture userLecture : userLectures) {
+					for (Lecture lecture : lectures) {
+						if (userLecture.getLectureId() != lecture.getLectureId()) {
+							lecturesToDelete.add(lecture);
+						}
+					}
+				}
+				Set<Lecture> newUserLectures = new HashSet<Lecture>();
+				for (Lecture userLecture : userLectures) {
+					for (Lecture lectureToDelete : lecturesToDelete) {
+						if (userLecture.getLectureId() != lectureToDelete.getLectureId()) {
+							newUserLectures.add(userLecture);
+						}
+					}
+				}
 				for (Course c : courses) {
 					System.out.println("tutti i corsi ai quali l'utente " + user.getEmail()
 							+ " è iscritto dopo l'eliminazione " + c.getCourseId());
 				}
+				System.out.println("userLecture");
+				for (Lecture userLecture : newUserLectures) {
+					System.out.println("userLecture" + userLecture.getLectureId());
+				}
+				user.setAttendedLectures(newUserLectures);
 				user.setFollowingCourses(courses);
 				userDAO.save(user);
 			}
 		}
+
 		// delete foreign key from invitation
 		Set<Invitation> invitations = invitationDAO.findInvitationsByCourse(courseDTO.getCourseId());
 		for (Invitation invitation : invitations) {
 			invitationDAO.delete(invitation);
+		}
+		// delete foreign key from lecture without student
+		course = courseDAO.findById(courseDTO.getCourseId()).get();
+		Set<Lecture> lectures = course.getLectures();
+		for (Lecture lecture : lectures) {
+			lectureDAO.deleteById(lecture.getLectureId());
 		}
 		// delete course
 		courseDAO.deleteById(courseDTO.getCourseId());
