@@ -42,7 +42,7 @@ export default function CoursesList() {
                     <div key={course.courseId}>
                         <ListItem className={classes.courseItem} xs={12} >
                             <ListItem button >
-                               <Link className={classes.courseName} to="/course" onClick={() => { goToCourse(course) }} style={{color:"#000000","text-decoration": "none"}}>{course.subject}</Link>
+                               <Link className={classes.courseName} style={{color:"#000000","text-decoration": "none"}}>{course.subject}</Link>
                             </ListItem>
                             <Typography className={classes.courseAttendace}>{getAttendancesNumber(course.courseId)}</Typography>
                         </ListItem>

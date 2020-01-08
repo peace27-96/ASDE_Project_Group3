@@ -42,8 +42,14 @@ export default function CoursesList(props) {
         BaseInstance.post("deleteCourse", {
             courseId: id
         }).then((res) => {
-            console.log("delete course ")
-            console.log(res)
+            var courses = []
+            var cookieCourses = JSON.parse(Cookies.get("createdCourses"))
+            for(let i=0; i<JSON.parse(Cookies.get("createdCourses")).length; i++){
+                if(cookieCourses[i].courseId !== id){
+                    courses.push(cookieCourses[i])
+                }
+            }
+            Cookies.set("createdCourses", courses)
         })
     }
     // <ListItem button style={{ width: 25 }} button onClick={ () => {deleteCourse(course.courseId)}}> <ClearOutlinedIcon/> </ListItem>

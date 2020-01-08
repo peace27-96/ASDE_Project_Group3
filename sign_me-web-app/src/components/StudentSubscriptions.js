@@ -9,6 +9,7 @@ import BaseInstance from '../http-client/BaseInstance';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearOutlinedIcon from '@material-ui/icons/ClearOutlined';
 import Cookies from 'js-cookie'
+import { IconButton } from '@material-ui/core';
 
 export default class StudentSubscriptions extends React.Component {
 
@@ -26,7 +27,7 @@ export default class StudentSubscriptions extends React.Component {
             student: studentId,
             courseId: JSON.parse(Cookies.get("currentCourse")).courseId
         }).then((res) => {
-           
+
         })
     }
 
@@ -35,19 +36,21 @@ export default class StudentSubscriptions extends React.Component {
             student: studentId,
             courseId: JSON.parse(Cookies.get("currentCourse")).courseId
         }).then((res) => {
-           
+
         })
     }
 
-    getSubscriptions = () => { 
+    getSubscriptions = () => {
         BaseInstance.post("getSubscriptionRequests", {
             courseId: JSON.parse(Cookies.get("currentCourse")).courseId
         }).then((res) => {
-            var students=[];
-            for(var i = 0; i < res.data.length; i++) {
-                var student = { "firstName": res.data[i].student.firstName, 
-                                "lastName": res.data[i].student.lastName, 
-                                "email": res.data[i].student.email };
+            var students = [];
+            for (var i = 0; i < res.data.length; i++) {
+                var student = {
+                    "firstName": res.data[i].student.firstName,
+                    "lastName": res.data[i].student.lastName,
+                    "email": res.data[i].student.email
+                };
                 students.push(student);
             }
             this.setState({
@@ -58,27 +61,27 @@ export default class StudentSubscriptions extends React.Component {
     }
 
     componentDidMount() {
-        this.timer = setInterval(()=> this.getSubscriptions(), 1000);
+        this.timer = setInterval(() => this.getSubscriptions(), 1000);
     }
-    
+
     componentWillUnmount() {
         clearInterval(this.timer)
         this.timer = null;
     }
-    
+
     render() {
-        if (this.state.loaded && this.state.subscriptions.length!=0) {
+        if (this.state.loaded && this.state.subscriptions.length != 0) {
             return (
                 <div style={{ padding: "10px" }}>
-                    <Card style={{ maxHeight: 250, overflow: 'auto', width: '90%' }}>
+                    <Card style={{ maxHeight: 500, overflow: 'auto', width: '90%' }}>
                         <CardContent>
                             <List>
                                 {
                                     this.state.subscriptions.map(item => (
                                         <ListItem>
                                             <ListItemText style={{ width: 50 }} primary={`${item.firstName} ${item.lastName}`} />
-                                            <ListItem button style={{ width: 25 }} button onClick={ () => {this.confirmSubscription(item.email)} }> <CheckIcon/> </ListItem>
-                                            <ListItem button style={{ width: 25 }} button onClick={ () => {this.deleteSubscription(item.email)} }> <ClearOutlinedIcon/> </ListItem>
+                                            <IconButton onClick={() => { this.confirmSubscription(item.email) }}> <CheckIcon /> </IconButton>
+                                            <IconButton onClick={() => { this.deleteSubscription(item.email) }}> <ClearOutlinedIcon /> </IconButton>
                                         </ListItem>
                                     ))
                                 }
@@ -93,8 +96,8 @@ export default class StudentSubscriptions extends React.Component {
                     <Card style={{ maxHeight: 250, overflow: 'auto', width: '90%' }}>
                         <CardContent>
                             <ListItem>
-                                <ListItemText>No Subscriptions Requests</ListItemText>    
-                            </ListItem>    
+                                <ListItemText>No Subscriptions Requests</ListItemText>
+                            </ListItem>
                         </CardContent>
                     </Card>
                 </div>

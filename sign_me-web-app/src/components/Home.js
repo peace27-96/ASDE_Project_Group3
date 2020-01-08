@@ -12,15 +12,16 @@ import BaseInstance from '../http-client/BaseInstance'
 import CourseCreation from './CourseCreation'
 import Cookies from 'js-cookie'
 import { createBrowserHistory } from "history";
+import Fab from '@material-ui/core/Fab';
 
-export default function RecipeReviewCard({history}) {
+export default function RecipeReviewCard({ history }) {
 
-    if(history === undefined) {
+    if (history === undefined) {
         history = createBrowserHistory()
         history.push("/login")
     }
 
-    if(Cookies.get("email") === undefined) 
+    if (Cookies.get("email") === undefined)
         history.push("/login");
 
     const classes = useStyles();
@@ -50,48 +51,41 @@ export default function RecipeReviewCard({history}) {
                     alert("generic error")
                     return
                 }
-                alert("File uploaded successfully.")
-                imagePath = 'http://localhost:8080/signme/' + res.data
+                imagePath = res.data
                 Cookies.set("profilePicture", imagePath)
+                window.location.reload(false);
             })
     };
-
 
     return (
         <div className={classes.profileContainer} style={{ padding: 20 }}>
             <Grid container>
                 <Grid item xs={3}>
                     <Card className={classes.pictureCard}>
-                        <CardMedia
-                            className={classes.media}
-                            image={imagePath}
-                            title="User Icon"
-                        />
-                        <CardContent>
-                            <Button component="label">
-                                Update Pic
-                                    <input type="file" style={{ display: "none" }} onChange={onFileChangeHandler}
-                                    accept=".jpg,.jpeg,.png,.bmp" />
-                            </Button>
-                        </CardContent>
+                        <CardMedia className={classes.media} image={imagePath} title="User Icon" />
                     </Card>
                     <Card className={classes.summaryCard}>
-                    <div style={{display:"flex","justify-content": "space-between"}}>
-                        <Typography className={classes.summaryField}>Name: </Typography> 
-                        <Typography className={classes.summaryField}>{Cookies.get("firstName")}</Typography> 
-                    </div>
-                    <Divider></Divider>
-                    <div style={{display:"flex","justify-content": "space-between"}}>
-                        <Typography className={classes.summaryField}>Surname: </Typography> 
-                        <Typography className={classes.summaryField}>{Cookies.get("lastName")}</Typography> 
-                    </div>
-                    <Divider></Divider>
-                    <div style={{display:"flex","justify-content": "space-between"}}>
-                        <Typography className={classes.summaryField}>Email: </Typography> 
-                        <Typography className={classes.summaryField}>{Cookies.get("email")}</Typography> 
-                    </div>
+                        <div style={{ display: "flex", "justify-content": "space-between" }}>
+                            <Typography className={classes.summaryField}>Name: </Typography>
+                            <Typography className={classes.summaryField}>{Cookies.get("firstName")}</Typography>
+                        </div>
+                        <Divider></Divider>
+                        <div style={{ display: "flex", "justify-content": "space-between" }}>
+                            <Typography className={classes.summaryField}>Surname: </Typography>
+                            <Typography className={classes.summaryField}>{Cookies.get("lastName")}</Typography>
+                        </div>
+                        <Divider></Divider>
+                        <div style={{ display: "flex", "justify-content": "space-between" }}>
+                            <Typography className={classes.summaryField}>Email: </Typography>
+                            <Typography className={classes.summaryField}>{Cookies.get("email")}</Typography>
+                        </div>
                     </Card>
-                    <CourseCreation/>
+                    <Fab component="label" className={classes.buttonStyle} color="primary" variant="extended">
+                        Update Pic
+                        <input type="file" style={{ display: "none" }} onChange={onFileChangeHandler}
+                            accept=".jpg,.jpeg,.png,.bmp" />
+                    </Fab>
+                    <CourseCreation />
                 </Grid>
 
                 <Grid item xs={9} style={{ paddingLeft: "20px" }}>

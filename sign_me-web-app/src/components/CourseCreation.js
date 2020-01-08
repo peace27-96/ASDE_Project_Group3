@@ -45,8 +45,8 @@ export default function FormDialog() {
   }
 
   return (
-    <div style={{ display:"inline-block", float:"right", paddingRight:40}}>
-      <Fab className={classes.buttonStyle} color="primary" onClick={handleClickOpen} variant="extended">
+    <div style={{ display:"inline-block", float:"right", paddingRight:10}}>
+      <Fab style={{ "margin_left":"10px", "width":"100% !important"}} className={classes.buttonStyle} color="primary" onClick={handleClickOpen} variant="extended">
       Create Course
       </Fab>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">

@@ -17,6 +17,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import BaseInstance from '../http-client/BaseInstance'
 import Cookies from 'js-cookie'
+import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
+import ExitToAppOutlinedIcon from '@material-ui/icons/ExitToAppOutlined';
+import {createBrowserHistory} from 'history'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -62,10 +65,13 @@ const useStyles = makeStyles(theme => ({
       },
     },
   },
+  logoutIcon: {
+    'margin-left': '20px'
+  }
 }));
 
 
-export default function SearchAppBar() {
+export default function SearchAppBar({history}) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [subject, setSubject] = React.useState("");
@@ -74,7 +80,7 @@ export default function SearchAppBar() {
   const handleClickOpen = () => {
     setOpen(true);
   };
-  
+
   const handleClose = () => {
     setSubject("");
     setCourseId(-1);
@@ -84,21 +90,35 @@ export default function SearchAppBar() {
   const registerToCourse = () => {
     console.log("REGISTER: " + id_course + " --- " + Cookies.get("email"))
 
-    BaseInstance.post("createSubscriptionRequest", { 
+    BaseInstance.post("createSubscriptionRequest", {
       email: Cookies.get("email"),
-      course: id_course})
+      course: id_course
+    })
       .then((res) => {
         console.log(res);
-    })
+      })
     handleClose()
   }
 
+  const redirectHome = () => {
+    if (history === undefined) {
+      history = createBrowserHistory()
+    }
+    history.push("/home")
+  }
+
+  const redirectLogout = () => {
+    if (history === undefined) {
+      history = createBrowserHistory()
+    }
+    history.push("/logout")
+  }
   return (
     <div className={classes.root}>
       <AppBar position="static" style={{ "backgroundColor": "#009569" }}>
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="open drawer">
-            <MenuIcon />
+          <IconButton edge="start" onClick={() => redirectHome()} className={classes.menuButton} color="inherit" aria-label="open drawer">
+            <HomeOutlinedIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>Sign Me</Typography>
           <div className={classes.search}>
@@ -117,16 +137,19 @@ export default function SearchAppBar() {
               )}
             />
           </div>
+          <IconButton edge="start" onClick={() => redirectLogout()} className={classes.logoutIcon} color="inherit" aria-label="open drawer">
+            <ExitToAppOutlinedIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
 
 
 
-       <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+      <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">Do you want to send your invitation request to "{subject}" course?</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            The professor will handle your subscription request as soon as possible.  
+            The professor will handle your subscription request as soon as possible.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -137,7 +160,7 @@ export default function SearchAppBar() {
             Agree
           </Button>
         </DialogActions>
-      </Dialog> 
+      </Dialog>
 
 
     </div>

@@ -20,7 +20,7 @@ import {
 
   
 
-export default function FormDialog() {
+export default function FormDialog(props) {
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
   const [selectedDate, setSelectedDate] = React.useState(new Date('2020-01-09T21:11:54'))
@@ -43,15 +43,14 @@ export default function FormDialog() {
   }
 
   const createLecture = () => {
-   
     var courseId = JSON.parse(Cookies.get("currentCourse")).courseId;
-
+    var lectures = []
     BaseInstance.post("createLecture", {course: courseId, description: description, date: selectedDate}).then(res =>{
-      var lectures = JSON.parse(Cookies.get("currentLectures"));
+      lectures = JSON.parse(Cookies.get("currentLectures"));
       lectures.push(res.data);
       Cookies.set("currentLectures", lectures);
+      props.setLectures(lectures)
     })
-    
     handleClose()
   }
 

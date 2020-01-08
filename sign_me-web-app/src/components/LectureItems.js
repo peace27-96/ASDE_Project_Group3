@@ -17,6 +17,7 @@ import IconButton from '@material-ui/core/IconButton'
 import Cookies from 'js-cookie'
 import BaseInstance from '../http-client/BaseInstance'
 import ManualAddition from "./ManualAddition"
+import LectureCreation from "./LectureCreation"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -79,7 +80,7 @@ export default function ControlledExpansionPanels() {
   }
 
   const deleteAttendance = (lectureId, email) => {
-    BaseInstance.post("deleteAttendance", {lectureId: lectureId, email:email}).then(res => {
+    BaseInstance.post("deleteAttendance", { lectureId: lectureId, email: email }).then(res => {
       var currStudents = []
       console.log(res.data)
       for (let i = 0; i < students.length; i++) {
@@ -92,7 +93,7 @@ export default function ControlledExpansionPanels() {
   }
 
   const getAttendaces = (lectureId) => {
-    BaseInstance.get("getLectureAttendances", {params:{"lectureId":lectureId}}).then(res => {
+    BaseInstance.get("getLectureAttendances", { params: { "lectureId": lectureId } }).then(res => {
       setStudents([])
       console.log(res.data)
       setStudents(res.data)
@@ -110,14 +111,14 @@ export default function ControlledExpansionPanels() {
               expandIcon={<ExpandMoreIcon />}
               aria-controls={`panel${lecture.lectureId}bh-content`}
               id={`panel${lecture.lectureId}bh-header`}>
-              <Typography className={classes.heading}>Lecture {lecture.description} {lecture.date}</Typography>
+              <Typography className={classes.heading}>{lecture.date} - {lecture.description}</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <List>
                 {
                   students.map(student => (
                     <ListItem>
-                      <ListItemText style={{width:80}}>{student.firstName} {student.lastName}</ListItemText>
+                      <ListItemText style={{ width: 80 }}>{student.firstName} {student.lastName}</ListItemText>
                       <IconButton edge="end" aria-label="delete" onClick={() => deleteAttendance(lecture.lectureId, student.email)} ><PersonAddDisabledIcon /> </IconButton>
                     </ListItem>
 
@@ -127,13 +128,13 @@ export default function ControlledExpansionPanels() {
             </ExpansionPanelDetails>
             <ExpansionPanelActions>
               <IconButton component="label"><AddAPhotoIcon /><input type="file" style={{ display: "none" }} onChange={(e) => onFileChangeHandler(e, lecture.lectureId)} accept=".jpg,.jpeg,.png,.bmp" /></IconButton>
-              <ManualAddition lectureId = {lecture.lectureId} students = {students}/>
+              <ManualAddition lectureId={lecture.lectureId} students={students} />
               <IconButton onClick={() => deleteLecture(lecture.lectureId)}><DeleteIcon style={{ color: "#C10000" }} /></IconButton>
             </ExpansionPanelActions>
           </ExpansionPanel>
         ))
       }
-
+      <LectureCreation setLectures={setLectures} />
     </div>
   );
 }

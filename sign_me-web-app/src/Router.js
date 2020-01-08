@@ -19,11 +19,11 @@ export default class Routes extends React.Component {
                     <Route path="/login" component={LoginHandler} />
                     <Route path="/logout" component={LogoutHandler} />
                     <Route path="/home">
-                        <AppBar />
+                        <AppBar history={history} />
                         <Home history={history} />
                     </Route>
                     <Route path="/course">
-                        <AppBar />
+                        <AppBar history={history} />
                         <CoursePage history={history} />
                     </Route>
                     <Route exact path="/" render={() => (
@@ -35,8 +35,8 @@ export default class Routes extends React.Component {
     }
     refresh = () => {
         if (Cookies.get("email") !== undefined) {
-            this.requestAllCourses()
-            this.requestSubscribedCourses()
+            //this.requestAllCourses()
+            //this.requestSubscribedCourses()
         }
     }
 
@@ -74,9 +74,8 @@ export default class Routes extends React.Component {
 const LogoutHandler = () => {
     Cookies.remove("email")
     Cookies.remove("currentCourse")
-    return <div>Logging out!</div>;
+    return <Redirect to="/login" />
 };
-
 
 
 

@@ -39,14 +39,13 @@ export default function FullWidthGrid({history}) {
     return (
         <div className={classes.root} >
             <h1 style={{ paddingLeft: 15, display:"inline-block"}}>{JSON.parse(Cookies.get("currentCourse")).subject}</h1>
-            <LectureCreation />
             <Grid container justify="center" xs={12} direction="row">
                 <Grid item xs={9} style={{paddingRight:30}}>
                     <LectureItems/>                  
                 </Grid>
                 <Grid container xs={3} direction="column" spacing={3}>
-                    <FolderList type="Avviso"/>
-                    <FolderList type="Materiale"/>
+                    {/*<FolderList type="Avviso"/>
+                    <FolderList type="Materiale"/>*/}
                     <StudentSubscriptions/>
                 </Grid>
             </Grid>
