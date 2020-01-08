@@ -241,7 +241,7 @@ public class CourseService {
 					count++;
 			}
 		}
-
+		System.out.println("il corso " + courseId + " info: " + count + "/" + tot);
 		return count + "/" + tot;
 	}
 
