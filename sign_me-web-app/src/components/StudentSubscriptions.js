@@ -96,7 +96,7 @@ export default class StudentSubscriptions extends React.Component {
                     <Card style={{ maxHeight: 250, overflow: 'auto', width: '90%' }}>
                         <CardContent>
                             <ListItem>
-                                <ListItemText>No Subscriptions Requests</ListItemText>
+                                <ListItemText>No Subscription Requests</ListItemText>
                             </ListItem>
                         </CardContent>
                     </Card>
