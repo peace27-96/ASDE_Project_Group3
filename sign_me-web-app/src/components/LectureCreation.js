@@ -56,7 +56,7 @@ export default function FormDialog(props) {
   }
 
   return (
-    <div style={{ display:"inline-block", float:"right", paddingRight:40}}>
+    <div style={{ display:"inline-block", float:"right"}}>
       <Fab className={classes.buttonStyle} color="primary" onClick={handleClickOpen} variant="extended">
       Create Lecture
       </Fab>

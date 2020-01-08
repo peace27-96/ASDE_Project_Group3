@@ -56,7 +56,7 @@ export default function CoursesList(props) {
     return (
         <List component="nav">
             <ListItem className={classes.courseItem} item xs={12}>
-                <Typography className={classes.courseNameHeader}>Courses</Typography>
+                <Typography className={classes.createdCourseNameHeader}>Courses</Typography>
             </ListItem>
             <Divider></Divider>
             <div className={classes.coursesContainer}>

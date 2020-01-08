@@ -61,7 +61,7 @@ export default class StudentSubscriptions extends React.Component {
     }
 
     componentDidMount() {
-        //this.timer = setInterval(() => this.getSubscriptions(), 1000);
+        this.timer = setInterval(() => this.getSubscriptions(), 1000);
     }
 
     componentWillUnmount() {

@@ -5,7 +5,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Button, ExpansionPanelActions, Grid } from '@material-ui/core';
+import { Button, ExpansionPanelActions, Grid, Card } from '@material-ui/core';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -105,36 +105,38 @@ export default function ControlledExpansionPanels() {
   return (
 
     <div className={classes.root}>
-      {
-        lectures.map(lecture => (
-          <ExpansionPanel expanded={expanded === `panel${lecture.lectureId}`} onClick={() => getAttendaces(lecture.lectureId)} onChange={handleChange(`panel${lecture.lectureId}`)}>
-            <ExpansionPanelSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls={`panel${lecture.lectureId}bh-content`}
-              id={`panel${lecture.lectureId}bh-header`}>
-              <Typography className={classes.heading}>{lecture.date} - {lecture.description}</Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              <List>
-                {
-                  students.map(student => (
-                    <ListItem>
-                      <ListItemText style={{ width: 80 }}>{student.firstName} {student.lastName}</ListItemText>
-                      <IconButton edge="end" aria-label="delete" onClick={() => deleteAttendance(lecture.lectureId, student.email)} ><PersonAddDisabledIcon /> </IconButton>
-                    </ListItem>
+      <Card style={{ "height": "500px", "overflow-y": "scroll" }}>
+        {
+          lectures.map(lecture => (
+            <ExpansionPanel expanded={expanded === `panel${lecture.lectureId}`} onClick={() => getAttendaces(lecture.lectureId)} onChange={handleChange(`panel${lecture.lectureId}`)}>
+              <ExpansionPanelSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls={`panel${lecture.lectureId}bh-content`}
+                id={`panel${lecture.lectureId}bh-header`}>
+                <Typography className={classes.heading}>{lecture.date} - {lecture.description}</Typography>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails>
+                <List style={{ "width": "100%" }}>
+                  {
+                    students.map(student => (
+                      <ListItem>
+                        <ListItemText>{student.firstName} {student.lastName}</ListItemText>
+                        <IconButton edge="end" aria-label="delete" onClick={() => deleteAttendance(lecture.lectureId, student.email)} ><PersonAddDisabledIcon /> </IconButton>
+                      </ListItem>
 
-                  ))
-                }
-              </List>
-            </ExpansionPanelDetails>
-            <ExpansionPanelActions>
-              <IconButton component="label"><AddAPhotoIcon /><input type="file" style={{ display: "none" }} onChange={(e) => onFileChangeHandler(e, lecture.lectureId)} accept=".jpg,.jpeg,.png,.bmp" /></IconButton>
-              <ManualAddition lectureId={lecture.lectureId} students={students} />
-              <IconButton onClick={() => deleteLecture(lecture.lectureId)}><DeleteIcon style={{ color: "#C10000" }} /></IconButton>
-            </ExpansionPanelActions>
-          </ExpansionPanel>
-        ))
-      }
+                    ))
+                  }
+                </List>
+              </ExpansionPanelDetails>
+              <ExpansionPanelActions>
+                <IconButton component="label"><AddAPhotoIcon /><input type="file" style={{ display: "none" }} onChange={(e) => onFileChangeHandler(e, lecture.lectureId)} accept=".jpg,.jpeg,.png,.bmp" /></IconButton>
+                <ManualAddition lectureId={lecture.lectureId} students={students} />
+                <IconButton onClick={() => deleteLecture(lecture.lectureId)}><DeleteIcon style={{ color: "#C10000" }} /></IconButton>
+              </ExpansionPanelActions>
+            </ExpansionPanel>
+          ))
+        }
+      </Card>
       <LectureCreation setLectures={setLectures} />
     </div>
   );

@@ -41,10 +41,10 @@ export default function CoursesList() {
                 {courses.map((course) => (
                     <div key={course.courseId}>
                         <ListItem className={classes.courseItem} xs={12} >
-                            <ListItem button >
-                               <Link className={classes.courseName} style={{color:"#000000","text-decoration": "none"}}>{course.subject}</Link>
+                            <ListItem>
+                               <ListItemText className={classes.courseName}>{course.subject}</ListItemText>
                             </ListItem>
-                            <Typography className={classes.courseAttendace}>{getAttendancesNumber(course.courseId)}</Typography>
+                            <Typography className={classes.courseAttendace}>0</Typography>
                         </ListItem>
                         <Divider></Divider>
                     </div>
