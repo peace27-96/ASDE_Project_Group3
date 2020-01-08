@@ -79,7 +79,7 @@ export const useStyles = makeStyles(theme => ({
     //width: "200px",
     "text-transform": "none",
     display: "inline-block",
-    "padding": "0 0 0 5px",
+    "padding": "0 0 0 25px",
     textAlign: "center",
   },
   buttonStyle: {
@@ -87,6 +87,14 @@ export const useStyles = makeStyles(theme => ({
     color: 'white',
     margin: theme.spacing(3, 0, 2),
     background: 'linear-gradient(45deg, #009569 30%, #008B5D 90%)',
-  }
+  },
+  picture: {
+    height: "100%",
+    paddingTop: '56.25%',
+    "display" : "block",
+    "background-size" : "contain", 
+    "background-repeat" : "no-repeat",
+    "background-position" : "center"
+  },
 
 }));

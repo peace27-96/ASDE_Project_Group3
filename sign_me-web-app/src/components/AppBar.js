@@ -123,6 +123,8 @@ export default function SearchAppBar({history}) {
           <Typography className={classes.title} variant="h6" noWrap>Sign Me</Typography>
           <div className={classes.search}>
             <Autocomplete
+              disableClearable
+              disableOpenOnFocus
               options={JSON.parse(Cookies.get("allCourses"))}
               getOptionLabel={option => option.subject}
               style={{ width: 300 }}

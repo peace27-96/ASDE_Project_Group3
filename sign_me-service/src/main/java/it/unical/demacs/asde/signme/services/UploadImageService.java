@@ -94,7 +94,8 @@ public class UploadImageService {
 			ArrayList<String> studentPictures = new ArrayList<>();
 
 			for (User user : course.getStudents()) {
-				studentPictures.add(user.getProfilePicture());
+				if(user.getProfilePicture() != null)
+					studentPictures.add(user.getProfilePicture());
 			}
 
 			System.out.println(courseId);
@@ -114,15 +115,16 @@ public class UploadImageService {
 			}
 
 			for (User user : course.getStudents()) {
-				for (String attendance : attendances) {
-					if (user.getProfilePicture().equals(attendance)) {
-						Set<Lecture> lectures = user.getAttendedLectures();
-						lectures.add(lecture);
-						user.setAttendedLectures(lectures);
-						userDAO.save(user);
-						attendingStudents.add(user);
+				if(user.getProfilePicture() != null )
+					for (String attendance : attendances) {
+						if (user.getProfilePicture().equals(attendance)) {
+							Set<Lecture> lectures = user.getAttendedLectures();
+							lectures.add(lecture);
+							user.setAttendedLectures(lectures);
+							userDAO.save(user);
+							attendingStudents.add(user);
+						}
 					}
-				}
 			}
 
 			attendingStudents.addAll(lecture.getStudents());

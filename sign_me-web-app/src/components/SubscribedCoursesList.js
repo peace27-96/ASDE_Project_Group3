@@ -21,7 +21,6 @@ export default function CoursesList() {
         //history.push("/course")
     }
 
-
     const getAttendancesNumber = (courseId) => {
         BaseInstance.get("getAttendancesNumber", {params:{email:Cookies.get("email"), courseId:courseId}}).then ( res => {
             console.log(res.data)
@@ -33,8 +32,8 @@ export default function CoursesList() {
     return (
         <List component="nav">
             <ListItem className={classes.courseItem} item xs={12}>
-                <Typography className={classes.courseNameHeader}>Courses</Typography>
-                <Typography className={classes.courseAttendaceHeader}>Attendences</Typography>
+                <Typography className={classes.createdCourseNameHeader}>Courses</Typography>
+                {/* <Typography className={classes.courseAttendaceHeader}>Attendences</Typography> */}
             </ListItem>
             <Divider></Divider>
             <div className={classes.coursesContainer}>
@@ -44,7 +43,7 @@ export default function CoursesList() {
                             <ListItem>
                                <ListItemText className={classes.courseName}>{course.subject}</ListItemText>
                             </ListItem>
-                            <Typography className={classes.courseAttendace}>0</Typography>
+                            {/*<Typography className={classes.courseAttendace}>{count}</Typography>*/}
                         </ListItem>
                         <Divider></Divider>
                     </div>

@@ -12,7 +12,7 @@ import Cookies from 'js-cookie'
 
   
 
-export default function FormDialog() {
+export default function FormDialog(props) {
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
   const [description, setSelectedDescription] = React.useState("")
@@ -34,6 +34,7 @@ export default function FormDialog() {
     console.log(courses)
     courses.push({ "courseId": id, "subject": name })
     Cookies.set("createdCourses", courses)
+    props.setCourses(courses)
   }
 
   const createCourse = () => {

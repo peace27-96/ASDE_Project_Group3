@@ -35,18 +35,19 @@ export default function FullWidthGrid({history}) {
         history.push("/login")
 
     const classes = useStyles();
+    const [subscribedStudents, setSubscribedStudents] = React.useState(JSON.parse(Cookies.get("currentStudents")))
 
     return (
         <div className={classes.root} >
             <h1 style={{ paddingLeft: 15, display:"inline-block"}}>{JSON.parse(Cookies.get("currentCourse")).subject}</h1>
             <Grid container justify="center" xs={12} direction="row">
                 <Grid item xs={9} style={{paddingRight:30}}>
-                    <LectureItems/>                  
+                    <LectureItems subscribedStudents={subscribedStudents} setSubscribedStudents={setSubscribedStudents}/>                  
                 </Grid>
                 <Grid container xs={3} direction="column" spacing={3}>
                     {/*<FolderList type="Avviso"/>
                     <FolderList type="Materiale"/>*/}
-                    <StudentSubscriptions/>
+                    <StudentSubscriptions subscribedStudents={subscribedStudents} setSubscribedStudents={setSubscribedStudents}/>
                 </Grid>
             </Grid>
         </div>

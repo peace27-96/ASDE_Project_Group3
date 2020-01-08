@@ -172,6 +172,23 @@ public class CourseService {
 	}
 
 	public String deleteLecture(LectureDeletionDTO deleteLectureDTO) {
+		Lecture lecture = lectureDAO.findById(deleteLectureDTO.getLectureId()).get();
+		Set<User> users = lecture.getStudents();
+
+		for (User user : users) {
+			Set<Lecture> lectures = user.getAttendedLectures();
+			Lecture lectureToDelete = null;
+			for (Lecture l : lectures) {
+				if (l.getLectureId().equals(deleteLectureDTO.getLectureId())) {
+					lectureToDelete = l;
+				}
+			}
+			if (lectureToDelete != null) {
+				lectures.remove(lectureToDelete);
+			}
+			user.setAttendedLectures(lectures);
+			userDAO.save(user);
+		}
 		lectureDAO.deleteById(deleteLectureDTO.getLectureId());
 		return "success";
 	}
@@ -186,7 +203,7 @@ public class CourseService {
 	}
 
 	public Set<User> getLectureAttendances(String lectureId) {
-		
+
 		Lecture lecture = lectureDAO.findById(Integer.parseInt(lectureId)).get();
 		return lecture.getStudents();
 	}

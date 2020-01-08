@@ -18,6 +18,7 @@ import Cookies from 'js-cookie'
 import BaseInstance from '../http-client/BaseInstance'
 import ManualAddition from "./ManualAddition"
 import LectureCreation from "./LectureCreation"
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,33 +33,38 @@ const useStyles = makeStyles(theme => ({
     fontSize: theme.typography.pxToRem(15),
     color: theme.palette.text.secondary,
   },
+  loading: {
+    display: 'flex',
+    marginLeft: '50%'
+  },
 }));
 
 
-const onFileChangeHandler = (e, lectureId) => {
-  e.preventDefault();
-  console.log("upload")
-  const formData = new FormData();
-  var nameFile = e.target.files[0].name;
-  var extension = nameFile.match(/.*\.(\w+)/)[1];
-  nameFile = JSON.parse(Cookies.get("currentCourse")).courseId + "@" + lectureId + "." + extension.toLowerCase();
-  formData.append('file', e.target.files[0], nameFile);
-  console.log(nameFile)
-  BaseInstance.post("uploadAttendacesPicture", formData)
-    .then(res => {
-      console.log("upload attendances")
-      console.log(res)
-      // for current student  
-    })
-};
-
-
-export default function ControlledExpansionPanels() {
+export default function ControlledExpansionPanels(props) {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false)
-
+  const [attendingStudents, setAttendingStudents] = React.useState([])
   const [lectures, setLectures] = React.useState(JSON.parse(Cookies.get("currentLectures")))
-  const [students, setStudents] = React.useState([])
+  const [uploading, setUploading] = React.useState(false)
+
+  const onFileChangeHandler = (e, lectureId) => {
+    e.preventDefault();
+    console.log("upload")
+    setUploading(true)
+    const formData = new FormData();
+    var nameFile = e.target.files[0].name;
+    var extension = nameFile.match(/.*\.(\w+)/)[1];
+    nameFile = JSON.parse(Cookies.get("currentCourse")).courseId + "@" + lectureId + "." + extension.toLowerCase();
+    formData.append('file', e.target.files[0], nameFile);
+    console.log(nameFile)
+    BaseInstance.post("uploadAttendacesPicture", formData)
+      .then(res => {
+        console.log("upload attendances")
+        console.log(res)
+        setAttendingStudents(res.data)
+        setUploading(false)
+      })
+  };
 
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -84,59 +90,61 @@ export default function ControlledExpansionPanels() {
     BaseInstance.post("deleteAttendance", { lectureId: lectureId, email: email }).then(res => {
       var currStudents = []
       console.log(res.data)
-      for (let i = 0; i < students.length; i++) {
-        if (students[i].email !== email) {
-          currStudents.push(students[i])
+      for (let i = 0; i < attendingStudents.length; i++) {
+        if (attendingStudents[i].email !== email) {
+          currStudents.push(attendingStudents[i])
         }
       }
-      setStudents(currStudents)
+      setAttendingStudents(currStudents)
     })
   }
 
-  const getAttendaces = (lectureId) => {
+  const getAttendances = (lectureId) => {
     BaseInstance.get("getLectureAttendances", { params: { "lectureId": lectureId } }).then(res => {
-      setStudents([])
-      console.log(res.data)
-      setStudents(res.data)
-      console.log(students)
+      setAttendingStudents(res.data)
     })
   }
 
   return (
 
     <div className={classes.root}>
-      <Card style={{ "height": "500px", "overflow-y": "scroll" }}>
-        {
-          lectures.map(lecture => (
-            <ExpansionPanel expanded={expanded === `panel${lecture.lectureId}`} onClick={() => getAttendaces(lecture.lectureId)} onChange={handleChange(`panel${lecture.lectureId}`)}>
-              <ExpansionPanelSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls={`panel${lecture.lectureId}bh-content`}
-                id={`panel${lecture.lectureId}bh-header`}>
-                <Typography className={classes.heading}>{lecture.date} - {lecture.description}</Typography>
-              </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
-                <List style={{ "width": "100%" }}>
-                  {
-                    students.map(student => (
-                      <ListItem>
-                        <ListItemText>{student.firstName} {student.lastName}</ListItemText>
-                        <IconButton edge="end" aria-label="delete" onClick={() => deleteAttendance(lecture.lectureId, student.email)} ><PersonAddDisabledIcon /> </IconButton>
-                      </ListItem>
+      {
+        lectures.map(lecture => (
+          <ExpansionPanel expanded={expanded === `panel${lecture.lectureId}`} onClick={() => getAttendances(lecture.lectureId)} onChange={handleChange(`panel${lecture.lectureId}`)}>
+            <ExpansionPanelSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls={`panel${lecture.lectureId}bh-content`}
+              id={`panel${lecture.lectureId}bh-header`}>
+              <Typography className={classes.heading}>{lecture.date} - {lecture.description}</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails style={{ paddingBottom: "0px" }} >
+              {
+                uploading ? (
+                  <div className={classes.loading}><CircularProgress color="secondary"/></div>
+                ) : (
+                    <List style={{ "width": "100%" }}>
+                      {
+                        attendingStudents.map(student => (
+                          <ListItem style={{ paddingTop: "0px", paddingBottom: "0px" }}>
+                            <ListItemText>{student.firstName} {student.lastName}</ListItemText>
+                            <IconButton edge="end" aria-label="delete" onClick={() => deleteAttendance(lecture.lectureId, student.email)} ><PersonAddDisabledIcon /> </IconButton>
+                          </ListItem>
+                        ))
+                      }
+                    </List>
+                  )
+              }
 
-                    ))
-                  }
-                </List>
-              </ExpansionPanelDetails>
-              <ExpansionPanelActions>
-                <IconButton component="label"><AddAPhotoIcon /><input type="file" style={{ display: "none" }} onChange={(e) => onFileChangeHandler(e, lecture.lectureId)} accept=".jpg,.jpeg,.png,.bmp" /></IconButton>
-                <ManualAddition lectureId={lecture.lectureId} students={students} />
-                <IconButton onClick={() => deleteLecture(lecture.lectureId)}><DeleteIcon style={{ color: "#C10000" }} /></IconButton>
-              </ExpansionPanelActions>
-            </ExpansionPanel>
-          ))
-        }
-      </Card>
+
+            </ExpansionPanelDetails>
+            <ExpansionPanelActions>
+              <IconButton component="label"><AddAPhotoIcon /><input type="file" style={{ display: "none" }} onChange={(e) => onFileChangeHandler(e, lecture.lectureId)} accept=".jpg,.jpeg,.png,.bmp" /></IconButton>
+              <ManualAddition lectureId={lecture.lectureId} subscribedStudents={props.subscribedStudents} setSubscribedStudents={props.setSubscribedStudents} attendingStudents={attendingStudents} setAttendingStudents={setAttendingStudents} />
+              <IconButton onClick={() => deleteLecture(lecture.lectureId)}><DeleteIcon style={{ color: "#C10000" }} /></IconButton>
+            </ExpansionPanelActions>
+          </ExpansionPanel>
+        ))
+      }
       <LectureCreation setLectures={setLectures} />
     </div>
   );

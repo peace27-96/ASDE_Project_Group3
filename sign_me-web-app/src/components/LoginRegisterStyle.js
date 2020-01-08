@@ -26,4 +26,11 @@ export const useStyles = makeStyles(theme => ({
       width: '100%',
       marginTop: theme.spacing(3),
     },
+    lectureCreation: {
+      background: 'linear-gradient(45deg, #009569 30%, #008B5D 90%)',
+      "position": "absolute",
+      "right": "3%",
+      "top" : "80px",
+      "font-size" : "80% !important",
+    }
   }));

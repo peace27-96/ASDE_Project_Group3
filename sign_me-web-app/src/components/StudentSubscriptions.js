@@ -13,8 +13,8 @@ import { IconButton } from '@material-ui/core';
 
 export default class StudentSubscriptions extends React.Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             subscriptions: [],
             loaded: false
@@ -22,12 +22,16 @@ export default class StudentSubscriptions extends React.Component {
         this.getSubscriptions();
     }
 
-    confirmSubscription = (studentId) => {
+    confirmSubscription = (student) => {
         BaseInstance.post("confirmSubscription", {
-            student: studentId,
+            student: student.email,
             courseId: JSON.parse(Cookies.get("currentCourse")).courseId
         }).then((res) => {
-
+            var students = this.props.subscribedStudents
+            students.push(student)
+            console.log(students)
+            this.props.setSubscribedStudents(students)
+            console.log(this.props.subscribedStudents)
         })
     }
 
@@ -80,7 +84,7 @@ export default class StudentSubscriptions extends React.Component {
                                     this.state.subscriptions.map(item => (
                                         <ListItem>
                                             <ListItemText style={{ width: 50 }} primary={`${item.firstName} ${item.lastName}`} />
-                                            <IconButton onClick={() => { this.confirmSubscription(item.email) }}> <CheckIcon /> </IconButton>
+                                            <IconButton onClick={() => { this.confirmSubscription(item) }}> <CheckIcon /> </IconButton>
                                             <IconButton onClick={() => { this.deleteSubscription(item.email) }}> <ClearOutlinedIcon /> </IconButton>
                                         </ListItem>
                                     ))

@@ -29,17 +29,12 @@ export default function FormDialog(props) {
 
     const addStudent = () => {
         BaseInstance.post("addAttendance", {lectureId: props.lectureId, email:email}).then(res => {
-            props.students.push(res.data)
+            var students = props.attendingStudents
+            students.push(res.data)
+            props.setAttendingStudents(students)
           })
           handleClose()
     }
-
-    const array = [
-        {email: "asd@asd.asd", firstName: "Piccolo", lastName: "Asd"},
-        {email: "ASD@ASD.ASD", firstName: "Grande", lastName: "Asd"},
-        {email: "qwe@qwe.qwe", firstName: "Piccolo", lastName: "Qwe"},
-        {email: "QWE@QWE.QWE", firstName: "Grande", lastName: "Qwe"}
-    ]
 
     return (
         <div>
@@ -49,7 +44,7 @@ export default function FormDialog(props) {
                 <DialogContent>
                     <div className={classes.search}>
                         <Autocomplete
-                            options={JSON.parse(Cookies.get("currentStudents"))}
+                            options={props.subscribedStudents}
                             getOptionLabel={option => option.firstName + " " + option.lastName}
                             style={{ width: 300 }}
                             onChange={(event, newValue) => {

@@ -28,6 +28,8 @@ export default function RecipeReviewCard({ history }) {
     const [expanded, setExpanded] = React.useState(false);
     // Cookies.remove("currentCourse")
 
+    const [courses, setCourses] = React.useState(JSON.parse(Cookies.get("createdCourses")))
+
     var imagePath = Cookies.get("profilePicture")
     if (imagePath === null) imagePath = '../resources/user-icon.png'
     else imagePath = 'http://localhost:8080/signme/' + imagePath
@@ -62,7 +64,7 @@ export default function RecipeReviewCard({ history }) {
             <Grid container>
                 <Grid item xs={3}>
                     <Card className={classes.pictureCard}>
-                        <CardMedia className={classes.media} image={imagePath} title="User Icon" />
+                        <CardMedia className={classes.picture} image={imagePath} title="User Icon" />
                     </Card>
                     <Card className={classes.summaryCard}>
                         <div style={{ display: "flex", "justify-content": "space-between" }}>
@@ -85,12 +87,12 @@ export default function RecipeReviewCard({ history }) {
                         <input type="file" style={{ display: "none" }} onChange={onFileChangeHandler}
                             accept=".jpg,.jpeg,.png,.bmp" />
                     </Fab>
-                    <CourseCreation />
+                    <CourseCreation courses={courses} setCourses={setCourses}/>
                 </Grid>
 
                 <Grid item xs={9} style={{ paddingLeft: "20px" }}>
                     <Card className={classes.coursesCard}>
-                        <TabPanel />
+                        <TabPanel courses={courses} setCourses={setCourses}/>
                     </Card>
                 </Grid>
             </Grid>

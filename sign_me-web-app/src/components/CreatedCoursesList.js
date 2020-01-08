@@ -16,13 +16,14 @@ import { Link } from 'react-router-dom'
 export default function CoursesList(props) {
     const classes = useStyles();
 
-    var courses = JSON.parse(Cookies.get("createdCourses"));
+    //var courses = JSON.parse(Cookies.get("createdCourses"));
+    var courses = props.courses
 
     const history = createBrowserHistory();
     Cookies.set("currentLectures", [])
     Cookies.set("currentStudents", [])
 
-
+    // currentStudents = studenti iscritti al corso cliccato
     const goToCourse = course => {
         Cookies.set("currentCourse", course)
 
@@ -33,8 +34,11 @@ export default function CoursesList(props) {
                 Cookies.set("currentLectures", lectures)
                 var students = res.data;
                 Cookies.set("currentStudents", students)
+                history.push("/course");
+                window.location.reload()
             })
         })
+
 
     }
 
@@ -50,10 +54,12 @@ export default function CoursesList(props) {
                 }
             }
             Cookies.set("createdCourses", courses)
+            props.setCourses(courses)
         })
     }
     // <ListItem button style={{ width: 25 }} button onClick={ () => {deleteCourse(course.courseId)}}> <ClearOutlinedIcon/> </ListItem>
     return (
+        //<Link className={classes.courseName} to="/course" onClick={() => { goToCourse(course) }} style={{ color: "#000000", "text-decoration": "none" }}>{course.subject}</Link>
         <List component="nav">
             <ListItem className={classes.courseItem} item xs={12}>
                 <Typography className={classes.createdCourseNameHeader}>Courses</Typography>
@@ -64,7 +70,7 @@ export default function CoursesList(props) {
                     <div key={course.courseId}>
                         <ListItem className={classes.courseItem} item xs={12}>
                             <ListItem button>
-                                <Link className={classes.courseName} to="/course" onClick={() => { goToCourse(course) }} style={{ color: "#000000", "text-decoration": "none" }}>{course.subject}</Link>
+                                <ListItemText onClick={() => { goToCourse(course) }}>{course.subject}</ListItemText>
                             </ListItem>
                             <IconButton onClick={() => { deleteCourse(course.courseId) }}> <ClearOutlinedIcon /> </IconButton>
                         </ListItem>
