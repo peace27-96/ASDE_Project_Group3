@@ -126,6 +126,7 @@ public class UploadImageService {
 						}
 					}
 			}
+			
 
 			attendingStudents.addAll(lecture.getStudents());
 
