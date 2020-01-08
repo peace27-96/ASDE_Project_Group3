@@ -13,7 +13,6 @@ import it.unical.demacs.asde.signme.model.User;
 import it.unical.demacs.asde.signme.model.DTO.AttendanceDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseCreationDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseDTO;
-import it.unical.demacs.asde.signme.model.DTO.HandleSubscriptionDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDeletionDTO;
 import it.unical.demacs.asde.signme.repositories.CourseDAO;
