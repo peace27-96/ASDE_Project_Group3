@@ -186,6 +186,7 @@ public class CourseService {
 	}
 
 	public Set<User> getLectureAttendances(String lectureId) {
+		
 		Lecture lecture = lectureDAO.findById(Integer.parseInt(lectureId)).get();
 		return lecture.getStudents();
 	}
