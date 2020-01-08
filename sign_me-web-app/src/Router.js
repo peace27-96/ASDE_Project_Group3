@@ -35,13 +35,13 @@ export default class Routes extends React.Component {
     }
     refresh = () => {
         if (Cookies.get("email") !== undefined) {
-            //this.requestAllCourses()
-            //this.requestSubscribedCourses()
+            this.requestAllCourses()
+            this.requestSubscribedCourses()
         }
     }
 
     componentDidMount = () => {
-        this.timer = setInterval(() => this.refresh(), 1000);
+        //this.timer = setInterval(() => this.refresh(), 1000);
     }
 
     componentWillUnmount = () => {

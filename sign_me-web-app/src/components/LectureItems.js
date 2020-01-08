@@ -74,6 +74,7 @@ export default function ControlledExpansionPanels() {
           currLectures.push(lectures[i])
         }
       }
+      currLectures.sort((a, b) => (a.date > b.date) ? 1 : -1)
       Cookies.set("currentLectures", currLectures)
       setLectures(currLectures)
     })

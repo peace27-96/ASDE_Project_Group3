@@ -48,6 +48,7 @@ export default function FormDialog(props) {
     BaseInstance.post("createLecture", {course: courseId, description: description, date: selectedDate}).then(res =>{
       lectures = JSON.parse(Cookies.get("currentLectures"));
       lectures.push(res.data);
+      lectures.sort((a, b) => (a.date > b.date) ? 1 : -1)
       Cookies.set("currentLectures", lectures);
       props.setLectures(lectures)
     })
