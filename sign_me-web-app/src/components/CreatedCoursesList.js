@@ -7,6 +7,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import ClearOutlinedIcon from '@material-ui/icons/ClearOutlined';
+import DeleteIcon from '@material-ui/icons/Delete';
 import BaseInstance from '../http-client/BaseInstance.js';
 import { IconButton } from '@material-ui/core';
 import Cookies from 'js-cookie'
@@ -72,7 +73,7 @@ export default function CoursesList(props) {
                             <ListItem button>
                                 <ListItemText onClick={() => { goToCourse(course) }}>{course.subject}</ListItemText>
                             </ListItem>
-                            <IconButton onClick={() => { deleteCourse(course.courseId) }}> <ClearOutlinedIcon /> </IconButton>
+                            <IconButton onClick={() => { deleteCourse(course.courseId) }}> <DeleteIcon /> </IconButton>
                         </ListItem>
                         <Divider></Divider>
                     </div>

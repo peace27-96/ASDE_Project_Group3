@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import it.unical.demacs.asde.signme.model.Course;
+import it.unical.demacs.asde.signme.model.Invitation;
 import it.unical.demacs.asde.signme.model.Lecture;
 import it.unical.demacs.asde.signme.model.User;
 import it.unical.demacs.asde.signme.repositories.CourseDAO;
+import it.unical.demacs.asde.signme.repositories.InvitationDAO;
 import it.unical.demacs.asde.signme.repositories.LectureDAO;
 import it.unical.demacs.asde.signme.repositories.UserDAO;
 
@@ -28,96 +30,195 @@ class SignMeApplicationTests {
 	@Autowired
 	private LectureDAO lectureDAO;
 
+	@Autowired
+	private InvitationDAO invitationDAO;
+
 	@Test
-	public void attendacesWorks() {
+	public void registerAndLogin() {
+		User u = new User();
+		u.setEmail("email@email");
+		u.setPassword("asd");
+		u.setFirstName("Luca");
+		u.setLastName("Rossi");
+		userDAO.save(u);
+		u = userDAO.findById("email@email").get();
+		assertEquals("email@email", u.getEmail());
+	}
 
-		// FaceRecognitionService uploadImageService = new FaceRecognitionService();
+	@Test
+	public void courseSubscription() {
+		User u = userDAO.findById("email@email").get();
+		// test course saving
+		Course c = new Course();
+		c.setSubject("Agile");
+		courseDAO.save(c);
+		c = courseDAO.findById(c.getCourseId()).get();
+		assertEquals("Agile", c.getSubject());
 
-		User cris = new User();
-		User kiello = new User();
+		// test user subscription
+		Set<Course> courses = u.getFollowingCourses();
+		courses.add(c);
+		u.setFollowingCourses(courses);
+		userDAO.save(u);
+		c = courseDAO.findById(c.getCourseId()).get();
+		assertEquals(1, c.getStudents().size());
 
-		cris.setEmail("cris");
-		kiello.setEmail("kiello");
+		// delete foreign key from users
+		Course course = null;
+		Set<User> users = userDAO.findUsersByFollowingCoursesCourseId(c.getCourseId());
+		for (User user : users) {
+			courses = user.getFollowingCourses();
+			for (Course cc : courses) {
+				if (cc.getCourseId() == c.getCourseId()) {
+					course = cc;
+				}
+			}
+			if (course != null) {
+				courses.remove(course);
+				Set<Lecture> userLectures = user.getAttendedLectures();
+				Set<Lecture> lectures = course.getLectures();
+				Set<Lecture> lecturesToDelete = new HashSet<>();
+				for (Lecture userLecture : userLectures) {
+					for (Lecture lecture : lectures) {
+						if (userLecture.getLectureId() != lecture.getLectureId()) {
+							lecturesToDelete.add(lecture);
+						}
+					}
+				}
+				Set<Lecture> newUserLectures = new HashSet<Lecture>();
+				for (Lecture userLecture : userLectures) {
+					for (Lecture lectureToDelete : lecturesToDelete) {
+						if (userLecture.getLectureId() != lectureToDelete.getLectureId()) {
+							newUserLectures.add(userLecture);
+						}
+					}
+				}
+				user.setAttendedLectures(newUserLectures);
+				user.setFollowingCourses(courses);
+				userDAO.save(user);
+			}
+		}
 
-		cris.setProfilePicture("src/main/resources/profilePictures/a@a.a.jpg");
-		kiello.setProfilePicture("src/main/resources/profilePictures/a@a.a.jpg");
+		// delete foreign key from invitation
+		Set<Invitation> invitations = invitationDAO.findInvitationsByCourse(c.getCourseId());
+		for (Invitation invitation : invitations) {
+			invitationDAO.delete(invitation);
+		}
+		// delete foreign key from lecture without student
+		course = courseDAO.findById(c.getCourseId()).get();
+		Set<Lecture> lectures = course.getLectures();
+		for (Lecture lecture : lectures) {
+			lectureDAO.deleteById(lecture.getLectureId());
+		}
+		// delete course
+		courseDAO.deleteById(c.getCourseId());
+	}
 
-		userDAO.save(cris);
-		userDAO.save(kiello);
+	@Test
+	public void lecturerCourses() {
+		User u = userDAO.findById("email@email").get();
+		Course c = new Course();
+		c.setSubject("INGSW");
+		c.setLecturer(u);
+		courseDAO.save(c);
+		u = userDAO.findById("email@email").get();
+		assertEquals(u, c.getLecturer());
+	}
 
-		cris = userDAO.findById("cris").get();
-		kiello = userDAO.findById("kiello").get();
+	@Test
+	public void courseLectures() {
+		Course c = new Course();
+		c.setSubject("Mobile");
+		courseDAO.save(c);
+		c = courseDAO.findById(c.getCourseId()).get();
+		Lecture l = new Lecture();
+		l.setCourse(c);
+		lectureDAO.save(l);
+		c = courseDAO.findById(c.getCourseId()).get();
+		assertEquals(1, c.getLectures().size());
+		l = lectureDAO.findById(l.getLectureId()).get();
+		Set<User> users = l.getStudents();
+		for (User user : users) {
+			Set<Lecture> lectures = user.getAttendedLectures();
+			Lecture lectureToDelete = null;
+			for (Lecture lecture : lectures) {
+				if (lecture.getLectureId().equals(l.getLectureId())) {
+					lectureToDelete = lecture;
+				}
+			}
+			if (lectureToDelete != null) {
+				lectures.remove(lectureToDelete);
+			}
+			user.setAttendedLectures(lectures);
+			userDAO.save(user);
+		}
+		lectureDAO.deleteById(l.getLectureId());
+		c = courseDAO.findById(c.getCourseId()).get();
+		assertEquals(0, c.getLectures().size());
+	}
 
-		Set<User> students = new HashSet<>();
+	@Test
+	public void getCourseAvailable() {
+		User prof = new User();
+		prof.setEmail("prof@prof");
+		userDAO.save(prof);
+		User stud = new User();
+		stud.setEmail("stud@stud");
+		userDAO.save(stud);
 
-		students.add(cris);
-		students.add(kiello);
+		Course c = new Course();
+		c.setSubject("Mobile");
+		c.setLecturer(prof);
+		courseDAO.save(c);
 
-		Course course = new Course();
-		courseDAO.save(course);
+		Set<Course> courses = courseDAO.findCoursesAvailable(stud);
+		assertEquals(1, courses.size());
+	}
 
-		course = courseDAO.findById(1).get();
+	@Test
+	public void courseInvitation() {
+		User u = userDAO.findById("stud@stud").get();
+		assertEquals("stud@stud", u.getEmail());
+		Course c = new Course();
+		c.setSubject("ASD");
+		courseDAO.save(c);
+		Invitation invitation = new Invitation();
+		invitation.setCourse(c.getCourseId());
+		invitation.setStudent(u);
+		invitation.setInvitationId(u.getEmail() + c.getCourseId());
+		invitationDAO.save(invitation);
+		u = userDAO.findById("stud@stud").get();
+		assertEquals(1, u.getUserInvitations().size());
+		String key = u.getEmail() + c.getCourseId();
+		invitationDAO.deleteById(key);
+		u = userDAO.findById("stud@stud").get();
+		assertEquals(0, u.getUserInvitations().size());
+	}
 
-		cris.setFollowingCourses(new HashSet<Course>());
-		cris.getFollowingCourses().add(course);
-
-		kiello.setFollowingCourses(new HashSet<Course>());
-		kiello.getFollowingCourses().add(course);
-
-		userDAO.save(cris);
-		userDAO.save(kiello);
-
-		course.setStudents(students);
-
-		courseDAO.save(course);
-
-		Lecture lecture1 = new Lecture();
-		Lecture lecture2 = new Lecture();
-
-		course = courseDAO.findById(1).get();
-
-		lecture1.setCourse(course);
-		lecture2.setCourse(course);
-
-		lectureDAO.save(lecture1);
-		lectureDAO.save(lecture2);
-
-		lecture1 = lectureDAO.findById(2).get();
-		lecture2 = lectureDAO.findById(3).get();
-
-		Set<Lecture> lectures = new HashSet<>();
-		lectures.add(lecture1);
-		lectures.add(lecture2);
-
-		course.setLectures(lectures);
-
-		courseDAO.save(course);
-
-		course = courseDAO.findById(1).get();
-
-		assertEquals(2, course.getStudents().size());
-
-		assertEquals(2, course.getLectures().size());
-
-//		try {
-//			File file = new File("src/main/resources/static/tmp/");
-//			BufferedImage bufferedImage = ImageIO.read(file);
-//			WritableRaster raster = bufferedImage.getRaster();
-//			DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
-//			byte[] bytes = data.getData();
-//			MultipartFile classPicture = new MockMultipartFile("1.jpeg", "1.jpeg", "jpeg", bytes);
-//
-//			ArrayList<String> studentPictures = new ArrayList<>();
-//			for (User user : course.getStudents()) {
-//				studentPictures.add(user.getProfilePicture());
-//			}
-//
-//			ArrayList<String> attendances = uploadImageService.getAttendances("src/main/resources/static/tmp/", studentPictures);
-//
-//		} catch (IOException e) { // TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
+	@Test
+	public void userAttendance() {
+		User u = userDAO.findById("stud@stud").get();
+		assertEquals("stud@stud", u.getEmail());
+		Course c = new Course();
+		c.setSubject("SSD");
+		courseDAO.save(c);
+		c = courseDAO.findById(c.getCourseId()).get();
+		Lecture l = new Lecture();
+		l.setCourse(c);
+		lectureDAO.save(l);
+		Set<Lecture> lectures = u.getAttendedLectures();
+		lectures.add(l);
+		u.setAttendedLectures(lectures);
+		userDAO.save(u);
+		l = lectureDAO.findById(l.getLectureId()).get();
+		assertEquals(1, l.getStudents().size());
+		u = userDAO.findById("stud@stud").get();
+		lectures = u.getAttendedLectures();
+		lectures.remove(l);
+		u.setAttendedLectures(lectures);
+		userDAO.save(u);
+		l = lectureDAO.findById(l.getLectureId()).get();
+		assertEquals(0, l.getStudents().size());
 	}
 
 }

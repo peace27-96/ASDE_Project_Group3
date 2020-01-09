@@ -82,8 +82,14 @@ export const useStyles = makeStyles(theme => ({
     "padding": "0 0 0 25px",
     textAlign: "center",
   },
+  homeButton: {
+    "max-width":"150px",
+    width: '100% !important',
+    color: 'white',
+    margin: theme.spacing(3, 0, 2),
+    background: 'linear-gradient(45deg, #009569 30%, #008B5D 90%)'
+  },
   buttonStyle: {
-    width: '45% !important',
     color: 'white',
     margin: theme.spacing(3, 0, 2),
     background: 'linear-gradient(45deg, #009569 30%, #008B5D 90%)',

@@ -30,9 +30,11 @@ export default function RecipeReviewCard({ history }) {
 
     const [courses, setCourses] = React.useState(JSON.parse(Cookies.get("createdCourses")))
 
-    var imagePath = Cookies.get("profilePicture")
-    if (imagePath === null) imagePath = '../resources/user-icon.png'
-    else imagePath = 'http://localhost:8080/signme/' + imagePath
+    var imagePath = Cookies.get("profilePicture"); 
+    if (imagePath === "null") 
+        imagePath = 'http://192.168.43.48:8080/signme/uploads/profilePictures/default.png'
+    else 
+        imagePath = 'http://192.168.43.48:8080/signme/' + imagePath
 
     const onFileChangeHandler = (e) => {
         e.preventDefault();
@@ -55,7 +57,7 @@ export default function RecipeReviewCard({ history }) {
                 }
                 imagePath = res.data
                 Cookies.set("profilePicture", imagePath)
-                window.location.reload(false);
+                window.location.reload(true);
             })
     };
 
@@ -82,11 +84,13 @@ export default function RecipeReviewCard({ history }) {
                             <Typography className={classes.summaryField}>{Cookies.get("email")}</Typography>
                         </div>
                     </Card>
-                    <Fab component="label" className={classes.buttonStyle} color="primary" variant="extended">
-                        Update Pic
-                        <input type="file" style={{ display: "none" }} onChange={onFileChangeHandler}
-                            accept=".jpg,.jpeg,.png,.bmp" />
-                    </Fab>
+                    <div style={{"text-align":"center"}}>
+                        <Fab component="label" className={classes.homeButton} color="primary" variant="extended">
+                            Update Pic
+                            <input type="file" style={{ display: "none" }} onChange={onFileChangeHandler}
+                                accept=".jpg,.jpeg,.png,.bmp" />
+                        </Fab>
+                    </div>
                     <CourseCreation courses={courses} setCourses={setCourses}/>
                 </Grid>
 
