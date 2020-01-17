@@ -201,7 +201,7 @@ class SignMeApplicationTests {
 		assertEquals("stud@stud", u.getEmail());
 		Course c = new Course();
 		c.setSubject("SSD");
-		courseDAO.save(c);
+		courseDAO.save(c); 
 		c = courseDAO.findById(c.getCourseId()).get();
 		Lecture l = new Lecture();
 		l.setCourse(c);
