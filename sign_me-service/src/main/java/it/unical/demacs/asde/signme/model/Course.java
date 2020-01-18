@@ -28,15 +28,16 @@ public class Course {
 	@JsonIgnore
 	private Set<User> students;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "course")
+	@OneToMany(mappedBy = "course")
+	@JsonIgnore
 	private Set<Lecture> lectures;
-	
+
 	@OneToMany(mappedBy = "course")
 	@JsonIgnore
 	private Set<Notice> notices;
-	
-//	@OneToMany(mappedBy = "course")
-//	private Set<Material> materials;
+
+	@OneToMany(mappedBy = "course")
+	private Set<Material> material;
 
 	@ManyToOne
 	@JsonIgnore
@@ -111,6 +112,5 @@ public class Course {
 //		this.materials = materials;
 //	}
 //	
-	
 
 }

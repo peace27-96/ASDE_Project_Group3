@@ -12,20 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import it.unical.demacs.asde.signme.model.Course;
-import it.unical.demacs.asde.signme.model.Invitation;
 import it.unical.demacs.asde.signme.model.Lecture;
 import it.unical.demacs.asde.signme.model.Material;
 import it.unical.demacs.asde.signme.model.Notice;
 import it.unical.demacs.asde.signme.model.User;
+import it.unical.demacs.asde.signme.model.DTO.AttendanceAccuracyDTO;
 import it.unical.demacs.asde.signme.model.DTO.AttendanceDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseCreationDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseInfoDTO;
-import it.unical.demacs.asde.signme.model.DTO.HandleSubscriptionDTO;
 import it.unical.demacs.asde.signme.model.DTO.InvitationDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDeletionDTO;
-import it.unical.demacs.asde.signme.model.DTO.LecturesInfoDTO;
 import it.unical.demacs.asde.signme.model.DTO.NoticeDTO;
 import it.unical.demacs.asde.signme.model.DTO.UserDTO;
 import it.unical.demacs.asde.signme.model.DTO.UserLoginDTO;
@@ -87,7 +85,7 @@ public class SignMeController {
 	}
 
 	@GetMapping("/getCourseLectures")
-	public LecturesInfoDTO getCourseLectures(@RequestParam String courseId) {
+	public Set<Lecture> getCourseLectures(@RequestParam String courseId) {
 		return courseService.getCourseLectures(courseId);
 	}
 
@@ -112,7 +110,7 @@ public class SignMeController {
 	}
 
 	@PostMapping("/getSubscriptionRequests")
-	public Set<Invitation> getInvitations(@RequestBody CourseDTO courseDTO) {
+	public Set<UserRegistrationDTO> getInvitations(@RequestBody CourseDTO courseDTO) {
 		return invitationService.getInvitation(courseDTO.getCourseId());
 	}
 
@@ -122,17 +120,17 @@ public class SignMeController {
 	}
 
 	@PostMapping("/uploadAttendacesPicture")
-	public Set<User> uploadAttendacesPicture(@RequestBody MultipartFile file) {
+	public Set<AttendanceAccuracyDTO> uploadAttendacesPicture(@RequestBody MultipartFile file) {
 		return uploadImageService.uploadAttendacesPicture(file);
 	}
 
 	@PostMapping("/confirmSubscription")
-	public String confirmSubscription(@RequestBody HandleSubscriptionDTO handleSubscriptionDTO) {
+	public String confirmSubscription(@RequestBody InvitationDTO handleSubscriptionDTO) {
 		return invitationService.confirmSubscription(handleSubscriptionDTO);
 	}
 
 	@PostMapping("/deleteSubscription")
-	public String deleteSubscription(@RequestBody HandleSubscriptionDTO handleSubscriptionDTO) {
+	public String deleteSubscription(@RequestBody InvitationDTO handleSubscriptionDTO) {
 		return invitationService.deleteSubscription(handleSubscriptionDTO);
 	}
 
@@ -159,11 +157,6 @@ public class SignMeController {
 	@PostMapping("/addAttendance")
 	public User addAttendance(@RequestBody AttendanceDTO attendanceDTO) {
 		return courseService.addAttendance(attendanceDTO);
-	}
-
-	@GetMapping("/getAttendancesNumber")
-	public String getAttendancesNumber(@RequestParam String email, @RequestParam String courseId) {
-		return courseService.getAttendancesNumber(email, courseId);
 	}
 
 	@GetMapping("/getNotices")

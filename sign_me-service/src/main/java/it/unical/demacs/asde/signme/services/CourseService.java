@@ -24,7 +24,6 @@ import it.unical.demacs.asde.signme.model.DTO.CourseDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseInfoDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDeletionDTO;
-import it.unical.demacs.asde.signme.model.DTO.LecturesInfoDTO;
 import it.unical.demacs.asde.signme.model.DTO.NoticeDTO;
 import it.unical.demacs.asde.signme.repositories.CourseDAO;
 import it.unical.demacs.asde.signme.repositories.InvitationDAO;
@@ -60,13 +59,11 @@ public class CourseService {
 
 		User user = userDAO.findById(email).get();
 
-		return new HashSet<>(user.getFollowingCourses());
+		return user.getFollowingCourses();
 	}
 
 	public Set<Course> getLecturerCourses(String email) {
-
-		return new HashSet<>(courseDAO.findCoursesByLecturerEmail(email));
-
+		return courseDAO.findByLecturerEmail(email);
 	}
 
 	public String createCourse(CourseCreationDTO courseCreationDTO) {
@@ -123,60 +120,40 @@ public class CourseService {
 
 	public String deleteCourse(CourseDTO courseDTO) {
 		// delete foreign key from users
-		Course course = null;
+		Course course = courseDAO.findById(courseDTO.getCourseId()).get();
 		Set<User> users = userDAO.findUsersByFollowingCoursesCourseId(courseDTO.getCourseId());
 		for (User user : users) {
-			System.out.println("utente iscritto " + user.getEmail());
 			Set<Course> courses = user.getFollowingCourses();
 			for (Course c : courses) {
-				System.out.println("tutti i corsi ai quali l'utente " + user.getEmail()
-						+ " è iscritto prima dell'eliminazione " + c.getCourseId());
 				if (c.getCourseId() == courseDTO.getCourseId()) {
 					course = c;
 				}
 			}
-			if (course != null) {
-				courses.remove(course);
-				Set<Lecture> userLectures = user.getAttendedLectures();
-				Set<Lecture> lectures = course.getLectures();
-				Set<Lecture> lecturesToDelete = new HashSet<>();
-				for (Lecture userLecture : userLectures) {
-					for (Lecture lecture : lectures) {
-						if (userLecture.getLectureId() != lecture.getLectureId()) {
-							lecturesToDelete.add(lecture);
-						}
+			// removing lectures and attendances
+			courses.remove(course);
+			Set<Lecture> userLectures = user.getAttendedLectures();
+			Set<Lecture> lectures = lectureDAO.findByCourseCourseId(course.getCourseId());
+			Set<Lecture> updatedAttendances = new HashSet<>();
+			for (Lecture userLecture : userLectures) {
+				for (Lecture lecture : lectures) {
+					if (userLecture.getLectureId() != lecture.getLectureId()) {
+						updatedAttendances.add(lecture);
 					}
 				}
-				Set<Lecture> newUserLectures = new HashSet<Lecture>();
-				for (Lecture userLecture : userLectures) {
-					for (Lecture lectureToDelete : lecturesToDelete) {
-						if (userLecture.getLectureId() != lectureToDelete.getLectureId()) {
-							newUserLectures.add(userLecture);
-						}
-					}
-				}
-				for (Course c : courses) {
-					System.out.println("tutti i corsi ai quali l'utente " + user.getEmail()
-							+ " è iscritto dopo l'eliminazione " + c.getCourseId());
-				}
-				System.out.println("userLecture");
-				for (Lecture userLecture : newUserLectures) {
-					System.out.println("userLecture" + userLecture.getLectureId());
-				}
-				user.setAttendedLectures(newUserLectures);
-				user.setFollowingCourses(courses);
-				userDAO.save(user);
 			}
+			user.setAttendedLectures(updatedAttendances);
+			user.setFollowingCourses(courses);
+			userDAO.save(user);
+
 		}
 
 		// delete foreign key from invitation
-		Set<Invitation> invitations = invitationDAO.findInvitationsByCourse(courseDTO.getCourseId());
+		Set<Invitation> invitations = invitationDAO.findByCourse(courseDTO.getCourseId());
 		for (Invitation invitation : invitations) {
 			invitationDAO.delete(invitation);
 		}
 		// delete foreign key from lecture without student
-		course = courseDAO.findById(courseDTO.getCourseId()).get();
-		Set<Lecture> lectures = course.getLectures();
+		Set<Lecture> lectures = lectureDAO.findByCourseCourseId(course.getCourseId());
 		for (Lecture lecture : lectures) {
 			lectureDAO.deleteById(lecture.getLectureId());
 		}
@@ -214,21 +191,15 @@ public class CourseService {
 		return "success";
 	}
 
-	public LecturesInfoDTO getCourseLectures(String courseId) {
+	public Set<Lecture> getCourseLectures(String courseId) {
 		Integer id = Integer.parseInt(courseId);
-		System.out.println("CourseID: " + courseId);
-		LecturesInfoDTO lecturesInfoDTO = new LecturesInfoDTO();
-		Course c = courseDAO.findById(id).get();
-		lecturesInfoDTO.setLectures(c.getLectures());
-		lecturesInfoDTO.setLecturer(c.getLecturer().getEmail());
-		System.out.println(lecturesInfoDTO.getLectures().size());
-		return lecturesInfoDTO;
-
+		return lectureDAO.findByCourseCourseId(id);
 	}
 
 	public Set<User> getLectureAttendances(String lectureId) {
-
 		Lecture lecture = lectureDAO.findById(Integer.parseInt(lectureId)).get();
+		for (User student : lecture.getStudents())
+			student.setCreatedCourses(new HashSet<>());
 		return lecture.getStudents();
 	}
 
@@ -253,38 +224,17 @@ public class CourseService {
 
 	public User addAttendance(AttendanceDTO attendanceDTO) {
 		User user = userDAO.findById(attendanceDTO.getEmail()).get();
+		Set<Course> createdCourses = courseDAO.findByLecturerEmail(attendanceDTO.getEmail());
+		user.setCreatedCourses(createdCourses);
 		Set<Lecture> lectures = user.getAttendedLectures();
 		Lecture lectureToAdd = lectureDAO.findById(attendanceDTO.getLectureId()).get();
-
 		lectures.add(lectureToAdd);
-
 		user.setAttendedLectures(lectures);
 
 		userDAO.save(user);
 
+		user.setCreatedCourses(new HashSet<>());
 		return user;
-	}
-
-	public String getAttendancesNumber(String email, String strCourseId) {
-		Integer courseId = Integer.parseInt(strCourseId);
-		Course course = courseDAO.findById(courseId).get();
-		User user = userDAO.findById(email).get();
-
-		Set<Lecture> courseLectures = course.getLectures();
-
-		Set<Lecture> userLectures = user.getAttendedLectures();
-
-		int tot = courseLectures.size();
-		int count = 0;
-
-		for (Lecture cl : courseLectures) {
-			for (Lecture ul : userLectures) {
-				if (cl.getLectureId() == ul.getLectureId())
-					count++;
-			}
-		}
-		System.out.println("il corso " + courseId + " info: " + count + "/" + tot);
-		return count + "/" + tot;
 	}
 
 	private boolean isFile(MultipartFile file) {
@@ -324,7 +274,7 @@ public class CourseService {
 	}
 
 	public String deleteMaterial(NoticeDTO materialDTO) {
-		//File currFile = new File(FOLDER + materialDTO.getNoticeDescription());
+		// File currFile = new File(FOLDER + materialDTO.getNoticeDescription());
 		System.out.println(materialDTO.getNoticeDescription() + " " + materialDTO.getCourseId());
 		materialDAO.deleteById(materialDTO.getCourseId());
 		return "success";
@@ -356,12 +306,18 @@ public class CourseService {
 	}
 
 	public CourseInfoDTO getCourseInfo(String courseId) {
-		LecturesInfoDTO lecturesInfoDTO = getCourseLectures(courseId);
+		Course c = courseDAO.findById(Integer.parseInt(courseId)).get();
+		Set<Lecture> lectures = getCourseLectures(courseId);
 		Set<User> users = getCourseStudents(courseId);
+		for (User user : users) {
+			user.setCreatedCourses(new HashSet<>());
+		}
+		
 		Set<Notice> notices = getNotices(courseId);
 		Set<Material> materials = getMaterials(courseId);
 		CourseInfoDTO courseInfoDTO = new CourseInfoDTO();
-		courseInfoDTO.setLecturesInfoDTO(lecturesInfoDTO);
+		courseInfoDTO.setLecturer(c.getLecturer().getEmail());
+		courseInfoDTO.setLectures(lectures);
 		courseInfoDTO.setNotices(notices);
 		courseInfoDTO.setUsers(users);
 		courseInfoDTO.setMaterial(materials);

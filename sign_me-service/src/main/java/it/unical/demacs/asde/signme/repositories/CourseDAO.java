@@ -12,7 +12,7 @@ import it.unical.demacs.asde.signme.model.User;
 @Repository
 public interface CourseDAO extends CrudRepository<Course, Integer> {
 
-	Set<Course> findCoursesByLecturerEmail(String email);
+	Set<Course> findByLecturerEmail(String email);
 
 	@Query("FROM Course c WHERE c.lecturer!=:user")
 	Set<Course> findCoursesAvailable(User user);

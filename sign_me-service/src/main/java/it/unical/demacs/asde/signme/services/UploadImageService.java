@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import it.unical.demacs.asde.signme.model.Course;
 import it.unical.demacs.asde.signme.model.Lecture;
 import it.unical.demacs.asde.signme.model.User;
+import it.unical.demacs.asde.signme.model.DTO.AttendanceAccuracyDTO;
 import it.unical.demacs.asde.signme.repositories.CourseDAO;
 import it.unical.demacs.asde.signme.repositories.LectureDAO;
 import it.unical.demacs.asde.signme.repositories.UserDAO;
@@ -69,9 +71,9 @@ public class UploadImageService {
 		}
 	}
 
-	public Set<User> uploadAttendacesPicture(MultipartFile file) {
-		Set<User> attendingStudents = new HashSet<>();
-		ArrayList<String> attendances = new ArrayList<String>();
+	public Set<AttendanceAccuracyDTO> uploadAttendacesPicture(MultipartFile file) {
+		Set<AttendanceAccuracyDTO> attendingStudents = new HashSet<>();
+		HashMap<String, Double> attendances = new HashMap<>();
 		try {
 			if (!isImage(file))
 				return attendingStudents;
@@ -94,7 +96,7 @@ public class UploadImageService {
 			ArrayList<String> studentPictures = new ArrayList<>();
 
 			for (User user : course.getStudents()) {
-				if(user.getProfilePicture() != null)
+				if (user.getProfilePicture() != null)
 					studentPictures.add(user.getProfilePicture());
 			}
 
@@ -109,26 +111,33 @@ public class UploadImageService {
 
 			attendances = faceRecognitionService.getAttendances(classPicture, studentPictures);
 
-			System.out.println("studenti presenti");
-			for (String attendance : attendances) {
-				System.out.println(attendance);
-			}
-
 			for (User user : course.getStudents()) {
-				if(user.getProfilePicture() != null )
-					for (String attendance : attendances) {
+				if (user.getProfilePicture() != null)
+					for (String attendance : attendances.keySet()) {
 						if (user.getProfilePicture().equals(attendance)) {
 							Set<Lecture> lectures = user.getAttendedLectures();
 							lectures.add(lecture);
 							user.setAttendedLectures(lectures);
 							userDAO.save(user);
-							attendingStudents.add(user);
+							user.setCreatedCourses(new HashSet<>());
+							AttendanceAccuracyDTO tmp = new AttendanceAccuracyDTO();
+							tmp.setFirstName(user.getFirstName());
+							tmp.setLastName(user.getLastName());
+							tmp.setEmail(user.getEmail());
+							Double doubleAccuracy = attendances.get(attendance) * 100;
+							tmp.setAccuracy(doubleAccuracy.intValue());
+							attendingStudents.add(tmp);
 						}
 					}
 			}
-			
-
-			attendingStudents.addAll(lecture.getStudents());
+			for (User user : lecture.getStudents()) {
+				AttendanceAccuracyDTO tmp = new AttendanceAccuracyDTO();
+				tmp.setFirstName(user.getFirstName());
+				tmp.setLastName(user.getLastName());
+				tmp.setEmail(user.getEmail());
+				tmp.setAccuracy(100);
+				attendingStudents.add(tmp);
+			}
 
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -21,10 +21,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class FaceRecognitionService {
 
-	// key1 8ac7a514e86048a087f9fca5180a0981
-	// key2 833a3a83f8f140aa8c7ffba6ae59e143
+	// Chiave 1: 9cef08b64840442ab13b62d399dc1035
 
-	private static final String subscriptionKey = "03b1cdb4d8604750956d911f9c1f7af7";
+	// Chiave 2: bd98635d10f04842962d64dae184fe51
+
+	private static final String subscriptionKey = "9cef08b64840442ab13b62d399dc1035";
 	private static final String uriBaseDetect = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect";
 	private static final String uriBaseVerify = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/verify";
 
@@ -39,7 +40,7 @@ public class FaceRecognitionService {
 		httpclient = HttpClientBuilder.create().build();
 	}
 
-	public ArrayList<String> getAttendances(String classPicture, ArrayList<String> studentPictures) {
+	public HashMap<String, Double> getAttendances(String classPicture, ArrayList<String> studentPictures) {
 		HashMap<String, String> studentFaceIDs = new HashMap<>();
 		classPicture = detect(classPicture);
 		ArrayList<String> classFaceIDs = getPictureIDs(classPicture);
@@ -52,19 +53,21 @@ public class FaceRecognitionService {
 		return compute(studentFaceIDs, classFaceIDs);
 	}
 
-	private ArrayList<String> compute(HashMap<String, String> students, ArrayList<String> pictureFaceIDs) {
-		ArrayList<String> attendances = new ArrayList<>();
+	private HashMap<String, Double> compute(HashMap<String, String> students, ArrayList<String> pictureFaceIDs) {
+		HashMap<String, Double> attendances = new HashMap<>();
 		for (String key : students.keySet()) {
+			Double accuracy = -1.0;
 			String foundStudentKey = "";
 			for (String id : pictureFaceIDs) {
-				if (compare(getJSONForCompare(students.get(key), id))) {
+				accuracy = compare(getJSONForCompare(students.get(key), id));
+				if (accuracy > 0.0) {
 					foundStudentKey = key;
 					break;
 				}
 			}
 			if (!foundStudentKey.equals("")) {
 				pictureFaceIDs.remove(foundStudentKey);
-				attendances.add(foundStudentKey);
+				attendances.put(foundStudentKey, accuracy);
 			}
 		}
 		return attendances;
@@ -99,8 +102,8 @@ public class FaceRecognitionService {
 		return jsonString;
 	}
 
-	private boolean compare(String faces) {
-		boolean found = false;
+	private Double compare(String faces) {
+		Double accuracy = -1.0;
 		try {
 			builder = new URIBuilder(uriBaseVerify);
 			// Prepare the URI for the REST API call.
@@ -120,8 +123,8 @@ public class FaceRecognitionService {
 				if (jsonString.charAt(2) != 'e') {
 					JSONObject obj = new JSONObject(jsonString);
 					if (obj.getBoolean("isIdentical")) {
-						found = true;
-						System.out.println(obj.get("confidence"));
+						accuracy = Double.parseDouble(obj.get("confidence").toString());
+						System.out.println("accuracy " + accuracy);
 					}
 				} else {
 					System.out.println("Too many requests or student not found");
@@ -130,7 +133,7 @@ public class FaceRecognitionService {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-		return found;
+		return accuracy;
 	}
 
 	private ArrayList<String> getPictureIDs(String jsonString) {
