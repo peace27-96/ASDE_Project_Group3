@@ -46,10 +46,8 @@ export default function FormDialog(props) {
   }
 
   return (
-    <div style={{ "text-align":"center", display:"inline-block", float:"right", "width":"100%"}}>
-      <Fab style={{ "margin_left":"10px"}} className={classes.homeButton} color="primary" onClick={handleClickOpen} variant="extended">
-      Create Course
-      </Fab>
+    <div style={{display:"inline-block", "width":"100%"}}>
+      <Button className={classes.homeButton} onClick={handleClickOpen}>Create Course</Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Create new course</DialogTitle>
         <DialogContent>

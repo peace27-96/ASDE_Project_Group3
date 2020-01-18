@@ -17,24 +17,19 @@ import { Link } from 'react-router-dom'
 export default function CoursesList(props) {
     const classes = useStyles();
 
-    //var courses = JSON.parse(Cookies.get("createdCourses"));
     var courses = props.courses
 
     const history = createBrowserHistory();
     Cookies.set("currentLectures", [])
     Cookies.set("currentStudents", [])
-    Cookies.set("courseNotices", [])
 
-    // currentStudents = studenti iscritti al corso cliccato
     const goToCourse = course => {
         Cookies.set("currentCourse", course)
 
         var courseId = course.courseId
         BaseInstance.get("getCourseInfo", {params: {courseId: courseId}}).then(res => {
-            console.log("Go To Course")
-            console.log(res)
-            var lectures = res.data.lecturesInfoDTO.lectures
-            var lecturerId = res.data.lecturesInfoDTO.lecturer
+            var lectures = res.data.lectures
+            var lecturerId = res.data.lecturer
             var students = res.data.users
             var notices = res.data.notices
             var material = res.data.material
@@ -46,7 +41,7 @@ export default function CoursesList(props) {
 
 
             Cookies.set("currentLectures", lectures)
-            Cookies.set("lecturerId", lecturerId);
+            Cookies.set("lecturerId", lecturerId)
             Cookies.set("currentStudents", students)
             Cookies.set("courseNotices", notices)
             Cookies.set("material", material)
@@ -73,10 +68,8 @@ export default function CoursesList(props) {
             props.setCourses(courses)
         })
     }
-    // <ListItem button style={{ width: 25 }} button onClick={ () => {deleteCourse(course.courseId)}}> <ClearOutlinedIcon/> </ListItem>
-    return (
-        //<Link className={classes.courseName} to="/course" onClick={() => { goToCourse(course) }} style={{ color: "#000000", "text-decoration": "none" }}>{course.subject}</Link>
-        <List component="nav">
+return (
+  <List component="nav">
             <ListItem className={classes.courseItem} item xs={12}>
                 <Typography className={classes.createdCourseNameHeader}>Courses</Typography>
             </ListItem>

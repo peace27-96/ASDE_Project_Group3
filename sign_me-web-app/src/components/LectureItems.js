@@ -21,6 +21,7 @@ import LectureCreation from "./LectureCreation"
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FabGroup from "./FabGroup"
 import MenuBookIcon from '@material-ui/icons/MenuBook';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -48,11 +49,15 @@ export default function ControlledExpansionPanels(props) {
   const [attendingStudents, setAttendingStudents] = React.useState([])
   const [lectures, setLectures] = React.useState(JSON.parse(Cookies.get("currentLectures")))
   const [uploading, setUploading] = React.useState(false)
-  
+  const [attendancesTaken, setAttendancesTaken] = React.useState(false)
+  const [currentPhotoAttendances, setCurrentPhotoAttendances] = React.useState("")
+  const CONFIDENCE = 65
+
 
   const onFileChangeHandler = (e, lectureId) => {
     e.preventDefault();
-    console.log("upload")
+    setCurrentPhotoAttendances("")
+    setAttendancesTaken(false)
     setUploading(true)
     const formData = new FormData();
     var nameFile = e.target.files[0].name;
@@ -62,15 +67,16 @@ export default function ControlledExpansionPanels(props) {
     console.log(nameFile)
     BaseInstance.post("uploadAttendacesPicture", formData)
       .then(res => {
-        console.log("upload attendances")
         console.log(res)
+        setCurrentPhotoAttendances(lectureId)
         setAttendingStudents(res.data)
+        setAttendancesTaken(true)
         setUploading(false)
       })
   };
 
   const handleChange = panel => (event, isExpanded) => {
-    if(Cookies.get("lecturerId") == Cookies.get("email"))
+    if (Cookies.get("lecturerId") == Cookies.get("email"))
       setExpanded(isExpanded ? panel : false);
   };
 
@@ -84,7 +90,7 @@ export default function ControlledExpansionPanels(props) {
           currLectures.push(lectures[i])
         }
       }
-     
+
       Cookies.set("currentLectures", currLectures)
       setLectures(currLectures)
     })
@@ -104,7 +110,7 @@ export default function ControlledExpansionPanels(props) {
   }
 
   const getAttendances = (lectureId) => {
-    if(Cookies.get("lecturerId") == Cookies.get("email")) {
+    if (Cookies.get("lecturerId") == Cookies.get("email")) {
       BaseInstance.get("getLectureAttendances", { params: { "lectureId": lectureId } }).then(res => {
         setAttendingStudents(res.data)
       })
@@ -118,7 +124,7 @@ export default function ControlledExpansionPanels(props) {
         lectures.map(lecture => (
           <ExpansionPanel expanded={expanded === `panel${lecture.lectureId}`} onClick={() => getAttendances(lecture.lectureId)} onChange={handleChange(`panel${lecture.lectureId}`)}>
             <ExpansionPanelSummary
-              expandIcon = { Cookies.get("lecturerId") == Cookies.get("email") ? <ExpandMoreIcon /> : null }
+              expandIcon={Cookies.get("lecturerId") == Cookies.get("email") ? <ExpandMoreIcon /> : null}
               aria-controls={`panel${lecture.lectureId}bh-content`}
               id={`panel${lecture.lectureId}bh-header`}>
               <Typography className={classes.heading}>{lecture.date} - {lecture.description}</Typography>
@@ -126,12 +132,24 @@ export default function ControlledExpansionPanels(props) {
             <ExpansionPanelDetails style={{ paddingBottom: "0px" }} >
               {
                 uploading ? (
-                  <div className={classes.loading}><CircularProgress color="secondary"/></div>
+                  <div className={classes.loading}><CircularProgress color="secondary" /></div>
                 ) : (
                     <List style={{ "width": "100%" }}>
                       {
                         attendingStudents.map(student => (
                           <ListItem style={{ paddingTop: "0px", paddingBottom: "0px" }}>
+                            {(attendancesTaken && lecture.lectureId === currentPhotoAttendances) ? (
+
+                              <div>
+                                {
+                                  (student.accuracy > CONFIDENCE) ? 
+                                  (< FiberManualRecordIcon style={{ color: "#06F508", "padding-right": "10px" }} />) : 
+                                  (< FiberManualRecordIcon style={{ color: "#F2F200", "padding-right": "10px" }} />)
+                                }
+                              </div>
+
+                              
+                          ) : null}
                             <ListItemText>{student.firstName} {student.lastName}</ListItemText>
                             <IconButton edge="end" aria-label="delete" onClick={() => deleteAttendance(lecture.lectureId, student.email)} ><PersonAddDisabledIcon /> </IconButton>
                           </ListItem>
@@ -140,7 +158,6 @@ export default function ControlledExpansionPanels(props) {
                     </List>
                   )
               }
-
 
             </ExpansionPanelDetails>
             <ExpansionPanelActions>
@@ -151,7 +168,6 @@ export default function ControlledExpansionPanels(props) {
           </ExpansionPanel>
         ))
       }
-      {/*Cookies.get("lecturerId") == Cookies.get("email") ? <LectureCreation setLectures={setLectures} /> : null*/}
       {Cookies.get("lecturerId") == Cookies.get("email") ? <FabGroup material={props.material} setMaterial={props.setMaterial} setNotices={props.setNotices} setLectures={setLectures} /> : null}
     </div>
   );

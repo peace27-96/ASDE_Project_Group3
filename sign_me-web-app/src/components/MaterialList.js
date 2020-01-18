@@ -40,7 +40,7 @@ export default class MaterialList extends React.Component {
     }
 
     downloadMaterial = (path) => {
-        var destination = "http://localhost:8080/signme/" + path;
+        var destination = BaseInstance.defaults.baseURL + path;
         window.location = destination
     }
 

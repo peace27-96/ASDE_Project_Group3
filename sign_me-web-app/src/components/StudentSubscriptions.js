@@ -24,36 +24,34 @@ export default class StudentSubscriptions extends React.Component {
 
     confirmSubscription = (student) => {
         BaseInstance.post("confirmSubscription", {
-            student: student.email,
-            courseId: JSON.parse(Cookies.get("currentCourse")).courseId
+            email: student.email,
+            course: JSON.parse(Cookies.get("currentCourse")).courseId
         }).then((res) => {
             var students = this.props.subscribedStudents
             students.push(student)
-            console.log(students)
             this.props.setSubscribedStudents(students)
-            console.log(this.props.subscribedStudents)
+            this.getSubscriptions()
         })
     }
 
     deleteSubscription = (studentId) => {
         BaseInstance.post("deleteSubscription", {
-            student: studentId,
-            courseId: JSON.parse(Cookies.get("currentCourse")).courseId
+            email: studentId,
+            course: JSON.parse(Cookies.get("currentCourse")).courseId
         }).then((res) => {
-
+            this.getSubscriptions()
         })
     }
 
     getSubscriptions = () => {
         BaseInstance.post("getSubscriptionRequests", {
-            courseId: JSON.parse(Cookies.get("currentCourse")).courseId
-        }).then((res) => {
+            courseId: JSON.parse(Cookies.get("currentCourse")).courseId}).then((res) => {
             var students = [];
             for (var i = 0; i < res.data.length; i++) {
                 var student = {
-                    "firstName": res.data[i].student.firstName,
-                    "lastName": res.data[i].student.lastName,
-                    "email": res.data[i].student.email
+                    "firstName": res.data[i].firstName,
+                    "lastName": res.data[i].lastName,
+                    "email": res.data[i].email
                 };
                 students.push(student);
             }
@@ -62,15 +60,6 @@ export default class StudentSubscriptions extends React.Component {
                 loaded: true
             })
         })
-    }
-
-    componentDidMount() {
-        this.timer = setInterval(() => this.getSubscriptions(), 1000);
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.timer)
-        this.timer = null;
     }
 
     render() {

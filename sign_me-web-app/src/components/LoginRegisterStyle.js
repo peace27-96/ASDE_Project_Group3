@@ -8,18 +8,15 @@ export const useStyles = makeStyles(theme => ({
       flexDirection: 'column',
       alignItems: 'center',
     },
-    avatar: {
-      /*margin: theme.spacing(1),
-      backgroundColor: theme.palette.secondary.main,*/
-    },
     logo: {
       width:'150px',
       height: '150px'
 
     },
     homeButton: {
-      "max-width":"150px",
-      width: '100% !important',
+      "max-width":"350px",
+      display:"inline-block",
+      width: "100%",
       color: 'white',
       margin: theme.spacing(3, 0, 2),
       background: 'linear-gradient(45deg, #009569 30%, #008B5D 90%)'

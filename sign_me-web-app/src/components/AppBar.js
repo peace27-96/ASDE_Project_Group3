@@ -3,10 +3,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Dialog from '@material-ui/core/Dialog';
@@ -20,6 +17,9 @@ import Cookies from 'js-cookie'
 import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import ExitToAppOutlinedIcon from '@material-ui/icons/ExitToAppOutlined';
 import {createBrowserHistory} from 'history'
+import Home from '@material-ui/icons/Home';
+import Tooltip from '@material-ui/core/Tooltip'
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -37,10 +37,7 @@ const useStyles = makeStyles(theme => ({
   },
   search: {
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
-    },
+    backgroundColor: 'white',
   },
   searchIcon: {
     width: theme.spacing(7),
@@ -117,10 +114,12 @@ export default function SearchAppBar({history}) {
     <div className={classes.root}>
       <AppBar position="static" style={{ "backgroundColor": "#009569" }}>
         <Toolbar>
-          <IconButton edge="start" onClick={() => redirectHome()} className={classes.menuButton} color="inherit" aria-label="open drawer">
-            <HomeOutlinedIcon />
-          </IconButton>
-          <Typography className={classes.title} variant="h6" noWrap>Sign Me</Typography>
+          <Tooltip title="Back home">
+            <IconButton edge="start" onClick={() => redirectHome()} className={classes.menuButton} color="inherit" aria-label="open drawer">
+              <Home/>
+            </IconButton>
+          </Tooltip>
+          <Typography className={classes.title} variant="h6" noWrap><b>Sign Me</b></Typography>
           <div className={classes.search}>
             <Autocomplete
               disableClearable
@@ -139,9 +138,11 @@ export default function SearchAppBar({history}) {
               )}
             />
           </div>
-          <IconButton edge="start" onClick={() => redirectLogout()} className={classes.logoutIcon} color="inherit" aria-label="open drawer">
-            <ExitToAppOutlinedIcon />
-          </IconButton>
+          <Tooltip title="Logout">
+            <IconButton edge="start" onClick={() => redirectLogout()} className={classes.logoutIcon} color="inherit" aria-label="open drawer">
+              <ExitToAppOutlinedIcon />
+            </IconButton>
+          </Tooltip>
         </Toolbar>
       </AppBar>
 

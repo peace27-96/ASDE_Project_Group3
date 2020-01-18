@@ -30,8 +30,8 @@ export default function CoursesList() {
 
         var courseId = course.courseId
         BaseInstance.get("getCourseInfo", {params: {courseId: courseId}}).then(res => {
-            var lectures = res.data.lecturesInfoDTO.lectures
-            var lecturerId = res.data.lecturesInfoDTO.lecturer
+            var lectures = res.data.lectures
+            var lecturerId = res.data.lecturer
             var students = res.data.users
             var notices = res.data.notices
             var material = res.data.material
@@ -42,7 +42,7 @@ export default function CoursesList() {
             material.sort((a,b) => (a.materialId > b.materialId)? 1 : -1)
 
             Cookies.set("currentLectures", lectures)
-            Cookies.set("lecturerId", lecturerId);
+            Cookies.set("lecturerId", lecturerId)
             Cookies.set("currentStudents", students)
             Cookies.set("courseNotices", notices)
             Cookies.set("material", material)

@@ -25,7 +25,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function FullWidthGrid({history}) {
     
-    //console.log(history)
     if(history === undefined) {
         history = createBrowserHistory()
         history.push("/login")
@@ -42,7 +41,7 @@ export default function FullWidthGrid({history}) {
     const [notices, setNotices] = React.useState(JSON.parse(Cookies.get("courseNotices")))
     const [material, setMaterial] = React.useState(JSON.parse(Cookies.get("material")))
 
-    // Se sono il professore
+    // If professor
     if(lecturerId === currentUserId) {
         return (
             <div className={classes.root} >
@@ -59,7 +58,7 @@ export default function FullWidthGrid({history}) {
                 </Grid>
             </div>
         );
-    } else { // Se sono lo studente
+    } else { // If student
         return (
             <div className={classes.root} >
                 <h1 style={{ paddingLeft: 15, display:"inline-block"}}>{JSON.parse(Cookies.get("currentCourse")).subject}</h1>

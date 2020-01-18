@@ -32,7 +32,6 @@ export default function LoginHandler ({history}) {
         history.push("/login")
     }
 
-    console.log(Cookies.get("email"))
     if(Cookies.get("email") !== undefined)
         history.push("/home");
 
@@ -43,8 +42,6 @@ export default function LoginHandler ({history}) {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const classes = useStyles();
-
-    //if(JSON.parse(Cookies.get("email")) !== undefined)  history.push("/");
 
     const setInitialSession = async (data) => {
         Cookies.set("email", data.email);
@@ -59,22 +56,16 @@ export default function LoginHandler ({history}) {
         var allCourses = res.data
         allCourses.sort((a, b) => (a.subject > b.subject) ? 1 : -1)
         Cookies.set("allCourses", allCourses);
-        console.log(JSON.parse(Cookies.get("allCourses")))
-        console.log(Cookies.get())
     }
 
     const handleSubmit = async e => {
         var res;
         if (login) {
             res = await BaseInstance.post("login", { email: email, password: password });
-            console.log("login")
-            console.log(res)
             if(res.data.email !== undefined){
                 await setInitialSession(res.data);
                 history.push("/home");
             } else {
-                console.log("gestire credenziali login")
-                // GESTIRE ERRORE CREDENZIALI
                 history.push("/login");
             }
         } else {
@@ -82,8 +73,6 @@ export default function LoginHandler ({history}) {
             if(res.data.email !== undefined){
                 setLogin(true);
             } else {
-                console.log("gestire credenziali register")
-                // GESTIRE ERRORE CREDENZIALI
                 history.push("/login");
             }
         }
