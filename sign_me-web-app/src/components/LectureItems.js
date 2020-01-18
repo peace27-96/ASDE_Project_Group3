@@ -19,6 +19,8 @@ import BaseInstance from '../http-client/BaseInstance'
 import ManualAddition from "./ManualAddition"
 import LectureCreation from "./LectureCreation"
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FabGroup from "./FabGroup"
+import MenuBookIcon from '@material-ui/icons/MenuBook';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -46,6 +48,7 @@ export default function ControlledExpansionPanels(props) {
   const [attendingStudents, setAttendingStudents] = React.useState([])
   const [lectures, setLectures] = React.useState(JSON.parse(Cookies.get("currentLectures")))
   const [uploading, setUploading] = React.useState(false)
+  
 
   const onFileChangeHandler = (e, lectureId) => {
     e.preventDefault();
@@ -67,7 +70,8 @@ export default function ControlledExpansionPanels(props) {
   };
 
   const handleChange = panel => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
+    if(Cookies.get("lecturerId") == Cookies.get("email"))
+      setExpanded(isExpanded ? panel : false);
   };
 
   const deleteLecture = (lectureId) => {
@@ -80,7 +84,7 @@ export default function ControlledExpansionPanels(props) {
           currLectures.push(lectures[i])
         }
       }
-      currLectures.sort((a, b) => (a.date > b.date) ? 1 : -1)
+     
       Cookies.set("currentLectures", currLectures)
       setLectures(currLectures)
     })
@@ -100,9 +104,11 @@ export default function ControlledExpansionPanels(props) {
   }
 
   const getAttendances = (lectureId) => {
-    BaseInstance.get("getLectureAttendances", { params: { "lectureId": lectureId } }).then(res => {
-      setAttendingStudents(res.data)
-    })
+    if(Cookies.get("lecturerId") == Cookies.get("email")) {
+      BaseInstance.get("getLectureAttendances", { params: { "lectureId": lectureId } }).then(res => {
+        setAttendingStudents(res.data)
+      })
+    }
   }
 
   return (
@@ -112,7 +118,7 @@ export default function ControlledExpansionPanels(props) {
         lectures.map(lecture => (
           <ExpansionPanel expanded={expanded === `panel${lecture.lectureId}`} onClick={() => getAttendances(lecture.lectureId)} onChange={handleChange(`panel${lecture.lectureId}`)}>
             <ExpansionPanelSummary
-              expandIcon={<ExpandMoreIcon />}
+              expandIcon = { Cookies.get("lecturerId") == Cookies.get("email") ? <ExpandMoreIcon /> : null }
               aria-controls={`panel${lecture.lectureId}bh-content`}
               id={`panel${lecture.lectureId}bh-header`}>
               <Typography className={classes.heading}>{lecture.date} - {lecture.description}</Typography>
@@ -145,7 +151,8 @@ export default function ControlledExpansionPanels(props) {
           </ExpansionPanel>
         ))
       }
-      <LectureCreation setLectures={setLectures} />
+      {/*Cookies.get("lecturerId") == Cookies.get("email") ? <LectureCreation setLectures={setLectures} /> : null*/}
+      {Cookies.get("lecturerId") == Cookies.get("email") ? <FabGroup material={props.material} setMaterial={props.setMaterial} setNotices={props.setNotices} setLectures={setLectures} /> : null}
     </div>
   );
 }

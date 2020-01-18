@@ -32,9 +32,9 @@ export default function RecipeReviewCard({ history }) {
 
     var imagePath = Cookies.get("profilePicture"); 
     if (imagePath === "null") 
-        imagePath = 'http://192.168.43.48:8080/signme/uploads/profilePictures/default.png'
+        imagePath = 'http://localhost:8080/signme/uploads/profilePictures/default.png'
     else 
-        imagePath = 'http://192.168.43.48:8080/signme/' + imagePath
+        imagePath = 'http://localhost:8080/signme/' + imagePath
 
     const onFileChangeHandler = (e) => {
         e.preventDefault();

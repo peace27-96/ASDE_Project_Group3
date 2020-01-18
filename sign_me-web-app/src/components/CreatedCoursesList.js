@@ -23,21 +23,36 @@ export default function CoursesList(props) {
     const history = createBrowserHistory();
     Cookies.set("currentLectures", [])
     Cookies.set("currentStudents", [])
+    Cookies.set("courseNotices", [])
 
     // currentStudents = studenti iscritti al corso cliccato
     const goToCourse = course => {
         Cookies.set("currentCourse", course)
 
         var courseId = course.courseId
-        BaseInstance.get("getCourseLectures", {params: {courseId: courseId}}).then(res => {
-            var lectures = res.data; 
-            BaseInstance.get("getCourseStudents", {params: {courseId: courseId}}).then(res => {
-                Cookies.set("currentLectures", lectures)
-                var students = res.data;
-                Cookies.set("currentStudents", students)
-                history.push("/course");
-                window.location.reload()
-            })
+        BaseInstance.get("getCourseInfo", {params: {courseId: courseId}}).then(res => {
+            console.log("Go To Course")
+            console.log(res)
+            var lectures = res.data.lecturesInfoDTO.lectures
+            var lecturerId = res.data.lecturesInfoDTO.lecturer
+            var students = res.data.users
+            var notices = res.data.notices
+            var material = res.data.material
+
+            lectures.sort((a, b) => (a.date > b.date) ? 1 : -1)
+            students.sort((a,b) => (a.lastName > b.lastName)? 1 : -1)
+            notices.sort((a,b) => (a.noticeId > b.noticeId)? 1 : -1)
+            material.sort((a,b) => (a.materialId > b.materialId)? 1 : -1)
+
+
+            Cookies.set("currentLectures", lectures)
+            Cookies.set("lecturerId", lecturerId);
+            Cookies.set("currentStudents", students)
+            Cookies.set("courseNotices", notices)
+            Cookies.set("material", material)
+                
+            history.push("/course");
+            window.location.reload()
         })
 
 

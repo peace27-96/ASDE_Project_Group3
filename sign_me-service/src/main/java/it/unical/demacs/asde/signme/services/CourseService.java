@@ -1,23 +1,36 @@
 package it.unical.demacs.asde.signme.services;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import it.unical.demacs.asde.signme.model.Course;
 import it.unical.demacs.asde.signme.model.Invitation;
 import it.unical.demacs.asde.signme.model.Lecture;
+import it.unical.demacs.asde.signme.model.Material;
+import it.unical.demacs.asde.signme.model.Notice;
 import it.unical.demacs.asde.signme.model.User;
 import it.unical.demacs.asde.signme.model.DTO.AttendanceDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseCreationDTO;
 import it.unical.demacs.asde.signme.model.DTO.CourseDTO;
+import it.unical.demacs.asde.signme.model.DTO.CourseInfoDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDTO;
 import it.unical.demacs.asde.signme.model.DTO.LectureDeletionDTO;
+import it.unical.demacs.asde.signme.model.DTO.LecturesInfoDTO;
+import it.unical.demacs.asde.signme.model.DTO.NoticeDTO;
 import it.unical.demacs.asde.signme.repositories.CourseDAO;
 import it.unical.demacs.asde.signme.repositories.InvitationDAO;
 import it.unical.demacs.asde.signme.repositories.LectureDAO;
+import it.unical.demacs.asde.signme.repositories.MaterialDAO;
+import it.unical.demacs.asde.signme.repositories.NoticeDAO;
 import it.unical.demacs.asde.signme.repositories.UserDAO;
 
 @Service
@@ -34,6 +47,14 @@ public class CourseService {
 
 	@Autowired
 	private InvitationDAO invitationDAO;
+
+	@Autowired
+	private NoticeDAO noticeDAO;
+
+	@Autowired
+	private MaterialDAO materialDAO;
+
+	private static String FOLDER = "uploads/material/";
 
 	public Set<Course> getStudentCourses(String email) {
 
@@ -193,12 +214,15 @@ public class CourseService {
 		return "success";
 	}
 
-	public Set<Lecture> getCourseLectures(String courseId) {
+	public LecturesInfoDTO getCourseLectures(String courseId) {
 		Integer id = Integer.parseInt(courseId);
 		System.out.println("CourseID: " + courseId);
-		Set<Lecture> tmp = courseDAO.findById(id).get().getLectures();
-		System.out.println(tmp.size());
-		return tmp;
+		LecturesInfoDTO lecturesInfoDTO = new LecturesInfoDTO();
+		Course c = courseDAO.findById(id).get();
+		lecturesInfoDTO.setLectures(c.getLectures());
+		lecturesInfoDTO.setLecturer(c.getLecturer().getEmail());
+		System.out.println(lecturesInfoDTO.getLectures().size());
+		return lecturesInfoDTO;
 
 	}
 
@@ -261,6 +285,87 @@ public class CourseService {
 		}
 		System.out.println("il corso " + courseId + " info: " + count + "/" + tot);
 		return count + "/" + tot;
+	}
+
+	private boolean isFile(MultipartFile file) {
+		String extension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename());
+		return ((extension.equals("pdf") || extension.equals("ppt") || extension.equals("pptx")
+				|| extension.equals("zip")));
+	}
+
+	public Material uploadMaterial(MultipartFile file) {
+		try {
+			if (!isFile(file))
+				return null;
+			String fileName = file.getOriginalFilename();
+
+			int courseId = Integer.parseInt(fileName.split("_")[0]);
+
+			String description = fileName.split("_")[1];
+
+			byte[] bytes = file.getBytes();
+			Path path = Paths.get(FOLDER + fileName);
+			File currFile = new File(FOLDER + fileName);
+			currFile.delete();
+			Files.write(path, bytes);
+
+			Course course = courseDAO.findById(courseId).get();
+			Material material = new Material();
+			material.setDescription(description);
+			material.setMaterialPath(path.toString());
+			material.setCourse(course);
+			materialDAO.save(material);
+
+			return material;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public String deleteMaterial(NoticeDTO materialDTO) {
+		//File currFile = new File(FOLDER + materialDTO.getNoticeDescription());
+		System.out.println(materialDTO.getNoticeDescription() + " " + materialDTO.getCourseId());
+		materialDAO.deleteById(materialDTO.getCourseId());
+		return "success";
+	}
+
+	public Set<Material> getMaterials(String courseId) {
+		return materialDAO.findMaterialsByCourseCourseId(Integer.parseInt(courseId));
+	}
+
+	public Notice createNotice(NoticeDTO noticeDTO) {
+		String description = noticeDTO.getNoticeDescription();
+		if (description.length() > 251)
+			description = description.substring(0, 250);
+		Course course = courseDAO.findById(noticeDTO.getCourseId()).get();
+		Notice notice = new Notice();
+		notice.setCourse(course);
+		notice.setDescription(description);
+		noticeDAO.save(notice);
+		return notice;
+	}
+
+	public String deleteNotice(CourseDTO noticeDTO) {
+		noticeDAO.deleteById(noticeDTO.getCourseId());
+		return "success";
+	}
+
+	public Set<Notice> getNotices(String courseId) {
+		return noticeDAO.findNoticesByCourseCourseId(Integer.parseInt(courseId));
+	}
+
+	public CourseInfoDTO getCourseInfo(String courseId) {
+		LecturesInfoDTO lecturesInfoDTO = getCourseLectures(courseId);
+		Set<User> users = getCourseStudents(courseId);
+		Set<Notice> notices = getNotices(courseId);
+		Set<Material> materials = getMaterials(courseId);
+		CourseInfoDTO courseInfoDTO = new CourseInfoDTO();
+		courseInfoDTO.setLecturesInfoDTO(lecturesInfoDTO);
+		courseInfoDTO.setNotices(notices);
+		courseInfoDTO.setUsers(users);
+		courseInfoDTO.setMaterial(materials);
+		return courseInfoDTO;
 	}
 
 }
