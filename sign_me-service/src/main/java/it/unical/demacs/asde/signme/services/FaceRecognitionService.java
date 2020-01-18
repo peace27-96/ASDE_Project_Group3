@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 public class FaceRecognitionService {
 
 	// Chiave 1: 9cef08b64840442ab13b62d399dc1035
-
 	// Chiave 2: bd98635d10f04842962d64dae184fe51
 
 	private static final String subscriptionKey = "9cef08b64840442ab13b62d399dc1035";
