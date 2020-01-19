@@ -8,7 +8,6 @@ public class SignMeApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SignMeApplication.class, args);
-	
 	}
 	
 }
