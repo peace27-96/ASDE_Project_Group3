@@ -152,6 +152,16 @@ public class CourseService {
 		for (Invitation invitation : invitations) {
 			invitationDAO.delete(invitation);
 		}
+		// delete foreign key from material
+		Set<Material> materials = materialDAO.findMaterialsByCourseCourseId(courseDTO.getCourseId());
+		for (Material material : materials) {
+			materialDAO.delete(material);
+		}
+		// delete foreign key from notice
+		Set<Notice> notices = noticeDAO.findNoticesByCourseCourseId(courseDTO.getCourseId());
+		for (Notice notice : notices) {
+			noticeDAO.delete(notice);
+		}
 		// delete foreign key from lecture without student
 		Set<Lecture> lectures = lectureDAO.findByCourseCourseId(course.getCourseId());
 		for (Lecture lecture : lectures) {
@@ -312,7 +322,7 @@ public class CourseService {
 		for (User user : users) {
 			user.setCreatedCourses(new HashSet<>());
 		}
-		
+
 		Set<Notice> notices = getNotices(courseId);
 		Set<Material> materials = getMaterials(courseId);
 		CourseInfoDTO courseInfoDTO = new CourseInfoDTO();

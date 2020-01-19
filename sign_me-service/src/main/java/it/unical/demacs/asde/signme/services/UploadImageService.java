@@ -110,6 +110,15 @@ public class UploadImageService {
 			System.out.println(classPicture);
 
 			attendances = faceRecognitionService.getAttendances(classPicture, studentPictures);
+			
+			for (User user : lecture.getStudents()) {
+				AttendanceAccuracyDTO tmp = new AttendanceAccuracyDTO();
+				tmp.setFirstName(user.getFirstName());
+				tmp.setLastName(user.getLastName());
+				tmp.setEmail(user.getEmail());
+				tmp.setAccuracy(100);
+				attendingStudents.add(tmp);
+			}
 
 			for (User user : course.getStudents()) {
 				if (user.getProfilePicture() != null)
@@ -129,14 +138,6 @@ public class UploadImageService {
 							attendingStudents.add(tmp);
 						}
 					}
-			}
-			for (User user : lecture.getStudents()) {
-				AttendanceAccuracyDTO tmp = new AttendanceAccuracyDTO();
-				tmp.setFirstName(user.getFirstName());
-				tmp.setLastName(user.getLastName());
-				tmp.setEmail(user.getEmail());
-				tmp.setAccuracy(100);
-				attendingStudents.add(tmp);
 			}
 
 		} catch (IOException e) {
