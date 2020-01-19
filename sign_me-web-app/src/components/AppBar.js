@@ -86,7 +86,11 @@ export default function SearchAppBar({history}) {
 
   const registerToCourse = () => {
     console.log("REGISTER: " + id_course + " --- " + Cookies.get("email"))
-
+    if(Cookies.get("profilePicture") === "null"){
+      alert("Please set a profile picture to subscribe for courses")
+      handleClose()
+      return
+    }
     BaseInstance.post("createSubscriptionRequest", {
       email: Cookies.get("email"),
       course: id_course

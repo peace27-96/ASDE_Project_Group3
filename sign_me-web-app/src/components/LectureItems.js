@@ -56,6 +56,7 @@ export default function ControlledExpansionPanels(props) {
 
   const onFileChangeHandler = (e, lectureId) => {
     e.preventDefault();
+    if(e.target.files[0] === undefined) return
     setCurrentPhotoAttendances("")
     setAttendancesTaken(false)
     setUploading(true)
@@ -140,16 +141,15 @@ export default function ControlledExpansionPanels(props) {
                           <ListItem style={{ paddingTop: "0px", paddingBottom: "0px" }}>
                             {(attendancesTaken && lecture.lectureId === currentPhotoAttendances) ? (
 
-                              <div>
-                                {
-                                  (student.accuracy > CONFIDENCE) ? 
-                                  (< FiberManualRecordIcon style={{ color: "#06F508", "padding-right": "10px" }} />) : 
-                                  (< FiberManualRecordIcon style={{ color: "#F2F200", "padding-right": "10px" }} />)
-                                }
-                              </div>
+                              student.accuracy !== undefined ? (
+                                <div>
+                                  {(student.accuracy > CONFIDENCE) 
+                                  ? (< FiberManualRecordIcon style={{ color: "#06F508", "padding-right": "10px" }} />) 
+                                  : (< FiberManualRecordIcon style={{ color: "#F2F200", "padding-right": "10px" }} />)}
+                                </div>
 
-                              
-                          ) : null}
+                              ) : null
+                            ) : null}
                             <ListItemText>{student.firstName} {student.lastName}</ListItemText>
                             <IconButton edge="end" aria-label="delete" onClick={() => deleteAttendance(lecture.lectureId, student.email)} ><PersonAddDisabledIcon /> </IconButton>
                           </ListItem>

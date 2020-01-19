@@ -30,7 +30,9 @@ export default function FormDialog(props) {
     const addStudent = () => {
         BaseInstance.post("addAttendance", {lectureId: props.lectureId, email:email}).then(res => {
             var students = props.attendingStudents
+            console.log(props.attendingStudents)
             students.push(res.data)
+            console.log(props.attendingStudents)
             props.setAttendingStudents(students)
           })
           handleClose()
