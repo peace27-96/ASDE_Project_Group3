@@ -15,7 +15,7 @@ Follow this guide using pgAdmin 4:
 5. Click "Restore"
 6. Done
 
-In case of problems follow this [link]([https://o7planning.org/en/11913/backup-and-restore-postgres-database-with-pgadmin](https://o7planning.org/en/11913/backup-and-restore-postgres-database-with-pgadmin))
+In case of problems follow this [link](https://o7planning.org/en/11913/backup-and-restore-postgres-database-with-pgadmin)
 
 ## Structure of React Components
 
